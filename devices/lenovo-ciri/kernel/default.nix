@@ -2,6 +2,7 @@
   mobile-nixos
 , fetchFromGitHub
 , fetchpatch
+, python3
 , ...
 }:
 
@@ -19,7 +20,7 @@ mobile-nixos.kernel-builder {
   patches = [
 
   ];
-
+  nativeBuildInputs = [ python3 ];
   isModular = true;
   isCompressed = false;
 }
