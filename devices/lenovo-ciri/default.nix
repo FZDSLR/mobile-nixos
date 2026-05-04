@@ -39,7 +39,7 @@
     })
   ];
 
-  mobile.device.name = "lenovo-niri";
+  mobile.device.name = "lenovo-ciri";
   mobile.device.identity = {
     name = "Chromebook Duet 11";
     manufacturer = "Lenovo";
