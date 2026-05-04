@@ -9,7 +9,7 @@ runCommand "mt8183-chromeos-firmware" {
   meta.license = linux-firmware.meta.license;
 } ''
   for firmware in \
-    mediatek/mt8188/scp_c0.img \
+    mediatek/mt8188/scp.img \
   ; do
     mkdir -p "$(dirname $out/lib/firmware/$firmware)"
     cp -vrf "$src/lib/firmware/$firmware" $out/lib/firmware/$firmware
