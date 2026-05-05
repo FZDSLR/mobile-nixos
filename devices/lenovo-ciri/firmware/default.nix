@@ -10,8 +10,8 @@ runCommand "mt8188-chromeos-firmware" {
 } ''
   for firmware in \
     mediatek/mt8188/scp.img \
-    mediatek/mt8188/sof/sof-mt8188.ldc \
-    mediatek/mt8188/sof/sof-mt8188.ri \
+    mediatek/sof/sof-mt8188.ldc \
+    mediatek/sof/sof-mt8188.ri \
     mediatek/sof-tplg/sof-mt8188.tplg \
   ; do
     mkdir -p "$(dirname $out/lib/firmware/$firmware)"
