@@ -57,4 +57,6 @@
     sensor:modalias:platform:*
       ACCEL_MOUNT_MATRIX=0, 1, 0; -1, 0, 0; 0, 0, -1
   '';
+
+  mobile.boot.stage-1.kernel.modules = [ "sbs-battery" ];
 }

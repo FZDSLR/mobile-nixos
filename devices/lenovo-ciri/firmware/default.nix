@@ -7,6 +7,9 @@
 runCommand "mt8188-chromeos-firmware" {
   src = linux-firmware;
   meta.license = linux-firmware.meta.license;
+  firmware_1002 = ./himax_i2chid_1002.bin;
+  firmware_1003 = ./himax_i2chid_1003.bin;
+  firmware_1004 = ./himax_i2chid_1004.bin;
 } ''
   # Copy all required firmware except mediatek/mt8188/scp*.img (handled separately)
   for firmware in \
@@ -36,4 +39,8 @@ runCommand "mt8188-chromeos-firmware" {
 
   cp -v "$scp_src" "$dst_dir/scp.img"
   cp -v "$scp_src" "$dst_dir/scp_c0.img"
+
+  cp -v "$firmware_1002" "$out/lib/firmware/himax_i2chid_1002.bin"
+  cp -v "$firmware_1003" "$out/lib/firmware/himax_i2chid_1003.bin"
+  cp -v "$firmware_1004" "$out/lib/firmware/himax_i2chid_1004.bin"
 ''

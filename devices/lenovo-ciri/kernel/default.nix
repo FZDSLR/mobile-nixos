@@ -58,6 +58,9 @@ mobile-nixos.kernel-builder {
       url = "https://lore.kernel.org/linux-input/20260504-wip-fix-core-v3-4-ce1f11f4968f@kernel.org/raw";
       hash = "sha256-iNIFE3Lvip24hTv5ftRBGrHaNZSrG9zUEUvIb3QbZMM=";
     })
+    ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
+    ./0001-HID-hid-himax-master-controller.patch
+    ./0001-dts-mediatek-enable-ciri-touch-support.patch
   ];
   nativeBuildInputs = [ python3 ];
   isModular = true;
