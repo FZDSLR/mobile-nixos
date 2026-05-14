@@ -7,22 +7,22 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "7.0.0";
+  version = "7.1.0-rc3";
   configfile = ./config.aarch64;
 
   src = fetchFromGitHub {
     owner = "torvalds";
     repo = "linux";
-    rev = "v7.0";
-    sha256 = "sha256-7TjYHhJdD67P3lquusrjjVtUIUzhLPtA5Oy7tc82gYA=";
+    rev = "v7.1-rc3";
+    sha256 = "sha256-tfOQHlMoej2pBYqDp8MxXx0yoIj43juH8f8DhBg08z8=";
   };
 
   patches = [
     # [PATCH] drm/panel: himax-hx83102: restore MODE_LPM after sending disable cmds
-    (fetchurl {
-      url = "https://gitlab.freedesktop.org/drm/misc/kernel/-/commit/2d4e80271f784aa0c7b17676e9762c7e8156be1c.patch";
-      hash = "sha256-/O7hozbml8pGkL7KrtvemEFR/FtWazSbCLIro213ojQ=";
-    })
+#     (fetchurl {
+#       url = "https://gitlab.freedesktop.org/drm/misc/kernel/-/commit/2d4e80271f784aa0c7b17676e9762c7e8156be1c.patch";
+#       hash = "sha256-/O7hozbml8pGkL7KrtvemEFR/FtWazSbCLIro213ojQ=";
+#     })
     # [PATCH 1/2] dt-bindings: pinctrl: mediatek: mt8188: allow gpio hogs
     (fetchurl {
       url = "https://lore.kernel.org/all/20260504072748.2580172-1-zhengxingda@iscas.ac.cn/raw";
