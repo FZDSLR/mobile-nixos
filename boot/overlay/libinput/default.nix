@@ -2,6 +2,7 @@
 , libevdev
 , mtdev
 , buildPackages
+, lua5_4
 }:
 (libinput.override {
       libwacom = null;
@@ -20,6 +21,7 @@
 .overrideAttrs({ nativeBuildInputs ? [], mesonFlags, ... }: {
   buildInputs = [
     libevdev
+    lua5_4
     mtdev
   ];
   nativeBuildInputs = nativeBuildInputs ++ [
