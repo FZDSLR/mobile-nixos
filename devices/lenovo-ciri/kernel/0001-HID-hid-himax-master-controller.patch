@@ -1,0 +1,41 @@
+From 85819a0c7f59909fa614c4cd4d42520083c4b2ef Mon Sep 17 00:00:00 2001
+From: fzdslr-nw <fzdslr@qq.com>
+Date: Sat, 9 May 2026 15:51:05 +0000
+Subject: [PATCH] HID: hid-himax: master -> controller
+
+---
+ drivers/hid/hid-himax.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/hid/hid-himax.c b/drivers/hid/hid-himax.c
+index cf0e4d37f..a54683c57 100644
+--- a/drivers/hid/hid-himax.c
++++ b/drivers/hid/hid-himax.c
+@@ -5207,7 +5207,7 @@ static int himax_spi_drv_probe(struct spi_device *spi)
+ 	ts = devm_kzalloc(&spi->dev, sizeof(struct himax_ts_data), GFP_KERNEL);
+ 	if (!ts)
+ 		return -ENOMEM;
+-	if (spi->master->flags & SPI_MASTER_HALF_DUPLEX) {
++	if (spi->controller->flags & SPI_CONTROLLER_HALF_DUPLEX) {
+ 		dev_err(ts->dev, "%s: Full duplex not supported by host\n", __func__);
+ 		return -EIO;
+ 	}
+@@ -5238,12 +5238,12 @@ static int himax_spi_drv_probe(struct spi_device *spi)
+ 	ts->spi = spi;
+ 	/*
+ 	 * The max_transfer_size is used to allocate the buffer for SPI transfer.
+-	 * The size should be given by the SPI master driver, but if not available
++	 * The size should be given by the SPI controller driver, but if not available
+ 	 * then use the HIMAX_MAX_TP_EV_STACK_SZ as default. Which is the least size for
+ 	 * each TP event data.
+ 	 */
+-	if (spi->master->max_transfer_size)
+-		ts->spi_xfer_max_sz = spi->master->max_transfer_size(spi);
++	if (spi->controller->max_transfer_size)
++		ts->spi_xfer_max_sz = spi->controller->max_transfer_size(spi);
+ 	else
+ 		ts->spi_xfer_max_sz = HIMAX_MAX_TP_EV_STACK_SZ;
+ 
+-- 
+2.50.1
+
