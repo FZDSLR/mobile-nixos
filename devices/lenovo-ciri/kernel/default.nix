@@ -1,49 +1,29 @@
 {
   mobile-nixos
 , fetchFromGitHub
+, fetchgit
 , fetchurl
 , python3
 , ...
 }:
 
 mobile-nixos.kernel-builder {
-  version = "7.1.0-rc4";
+  version = "7.2.0-rc5";
   configfile = ./config.aarch64;
 
-  src = fetchFromGitHub {
-    owner = "torvalds";
-    repo = "linux";
-    rev = "v7.1-rc4";
-    sha256 = "sha256-gPDxpJjCMFJI/yF9LRFdyI17ABkwANlWU4Tmu4Mb5xs=";
+  src = fetchgit {
+    url = "https://mirrors.bfsu.edu.cn/git/linux.git";
+    rev = "v7.2-rc5";
+    hash = "sha256-p1LRmMz4AHYAtwy0JrFS3Rtpp8oKjTrm8pZIfAo+cRc=";
   };
 
   patches = [
-    # [PATCH 1/2] dt-bindings: pinctrl: mediatek: mt8188: allow gpio hogs
-    (fetchurl {
-      url = "https://lore.kernel.org/all/20260504072748.2580172-1-zhengxingda@iscas.ac.cn/raw";
-      hash = "sha256-30d961Dcsey2kzgkkthJ2p5GB2hQnUqt8f9DGDtnhcc=";
-    })
     # [PATCH] arm64: dts: mediatek: mt8188-geralt: enable touchpad
     (fetchurl {
       url = "https://lore.kernel.org/all/20260504072846.2581096-1-zhengxingda@iscas.ac.cn/raw";
       hash = "sha256-dgVOnNXBsMNOxlkiSImgrAGXw35kITN3nkM2QZSj5Ks=";
     })
-    # [PATCH v3 3/4] HID: multitouch: use __free(kfree) to clean up
-    (fetchurl {
-      url = "https://lore.kernel.org/linux-input/20260504-wip-fix-core-v3-3-ce1f11f4968f@kernel.org/raw";
-      hash = "sha256-WFhmmvHn1wtdC5m2I73GaWkEF75aY0JeyFSFTdJ2+7w=";
-    })
-    # [PATCH v3 4/4] HID: wacom: use __free(kfree) to clean up temporary
-    (fetchurl {
-      url = "https://lore.kernel.org/linux-input/20260504-wip-fix-core-v3-4-ce1f11f4968f@kernel.org/raw";
-      hash = "sha256-iNIFE3Lvip24hTv5ftRBGrHaNZSrG9zUEUvIb3QbZMM=";
-    })
-    # [PATCH] Bluetooth: btmtk: accept too short WMT FUNC_CTRL events
-    (fetchurl {
-      url = "https://lore.kernel.org/all/770d36b07311bf88210c187923f243fb9f126f04.1777058551.git.pav@iki.fi/raw";
-      hash = "sha256-mwSnx1mV1b81xENbK9YQMlu8phzwKU0743QfUMky3jM=";
-    })
-    ./pcie_wifi_bt.diff
+    ./PATCH-v6-00-16-arm64-mediatek-Add-M.2-E-key-slot-on-Chromebooks.diff
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
     ./0001-HID-hid-himax-master-controller.patch
     ./0001-dts-mediatek-enable-ciri-touch-support.patch
