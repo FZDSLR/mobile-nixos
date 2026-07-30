@@ -224,11 +224,7 @@ stdenv.mkDerivation (inputArgs // {
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl bc net-tools openssl rsync gmp libmpc mpfr ]
-<<<<<<< HEAD
     ++ optional (target == "uImage") buildPackages.ubootTools
-=======
-    ++ optional (kernelTarget == "uImage") buildPackages.ubootTools
->>>>>>> 1da8613e (treewide: Adapt to changes in Nixpkgs)
     ++ optional (lib.versionAtLeast version "4.14" && lib.versionOlder version "5.8") libelf
     ++ optional (lib.versionAtLeast version "4.15") util-linux
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
