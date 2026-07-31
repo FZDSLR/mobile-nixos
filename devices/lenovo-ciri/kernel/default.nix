@@ -48,6 +48,11 @@ mobile-nixos.kernel-builder {
       url = "https://lore.kernel.org/all/20260401-mtk-jpeg-release-issue-v1-1-2271a1779340@collabora.com/raw";
       hash = "sha256-YLhgGbVxcrlnbcSMrcbSFNMnnbiVhApRbUzaJzoedIU=";
     })
+    # [PATCH 1/3] wifi: mt76: mt7921: drop TXRX_NOTIFY on non-mmio buses
+    (fetchurl {
+      url = "https://lore.kernel.org/all/20260627191336.20223-2-lucid_duck@justthetip.ca/raw";
+      hash = "sha256-O/KDOa5uboNZedOgd5OZ+hfbB5l29gE/Uubk1UvzKSY=";
+    })
     ./pcie_wifi_bt.diff
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
     ./0001-HID-hid-himax-master-controller.patch
