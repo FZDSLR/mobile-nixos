@@ -1,20 +1,19 @@
 {
   mobile-nixos
-, fetchFromGitHub
+, fetchgit
 , fetchurl
 , python3
 , ...
 }:
 
 mobile-nixos.kernel-builder {
-  version = "7.1.0-rc4";
+  version = "7.1.5";
   configfile = ./config.aarch64;
 
-  src = fetchFromGitHub {
-    owner = "torvalds";
-    repo = "linux";
-    rev = "v7.1-rc4";
-    sha256 = "sha256-gPDxpJjCMFJI/yF9LRFdyI17ABkwANlWU4Tmu4Mb5xs=";
+  src = fetchgit {
+    url = "https://mirrors.cernet.edu.cn/linux-stable.git";
+    rev = "v7.1.5";
+    sha256 = "sha256-pPS5d2AyKF+ommPUXb5NW1p5dkjnnQtx5a5JqhgpcsM=";
   };
 
   patches = [
@@ -32,21 +31,6 @@ mobile-nixos.kernel-builder {
     (fetchurl {
       url = "https://lore.kernel.org/linux-input/20260504-wip-fix-core-v3-3-ce1f11f4968f@kernel.org/raw";
       hash = "sha256-WFhmmvHn1wtdC5m2I73GaWkEF75aY0JeyFSFTdJ2+7w=";
-    })
-    # [PATCH v3 4/4] HID: wacom: use __free(kfree) to clean up temporary
-    (fetchurl {
-      url = "https://lore.kernel.org/linux-input/20260504-wip-fix-core-v3-4-ce1f11f4968f@kernel.org/raw";
-      hash = "sha256-iNIFE3Lvip24hTv5ftRBGrHaNZSrG9zUEUvIb3QbZMM=";
-    })
-    # [PATCH] Bluetooth: btmtk: accept too short WMT FUNC_CTRL events
-    (fetchurl {
-      url = "https://lore.kernel.org/all/770d36b07311bf88210c187923f243fb9f126f04.1777058551.git.pav@iki.fi/raw";
-      hash = "sha256-mwSnx1mV1b81xENbK9YQMlu8phzwKU0743QfUMky3jM=";
-    })
-    # [PATCH] media: mtk-jpeg: cancel workqueue on release for supported platforms only
-    (fetchurl {
-      url = "https://lore.kernel.org/all/20260401-mtk-jpeg-release-issue-v1-1-2271a1779340@collabora.com/raw";
-      hash = "sha256-YLhgGbVxcrlnbcSMrcbSFNMnnbiVhApRbUzaJzoedIU=";
     })
     # [PATCH 1/3] wifi: mt76: mt7921: drop TXRX_NOTIFY on non-mmio buses
     (fetchurl {
