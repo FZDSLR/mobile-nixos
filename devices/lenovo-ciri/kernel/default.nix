@@ -7,21 +7,15 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "7.1.5";
+  version = "7.1.8";
   configfile = ./config.aarch64;
 
-  src = fetchgit {
-    url = "https://mirrors.cernet.edu.cn/linux-stable.git";
-    rev = "v7.1.5";
-    sha256 = "sha256-pPS5d2AyKF+ommPUXb5NW1p5dkjnnQtx5a5JqhgpcsM=";
+  src = fetchurl {
+    url = "mirror://kernel/linux/kernel/v7.x/linux-7.1.8.tar.xz";
+    hash = "sha256-/wHctEknnVtM/M2wH+5jnPX/GAPxdJp3hE3TORVCLEk=";
   };
 
   patches = [
-    # [PATCH 1/2] dt-bindings: pinctrl: mediatek: mt8188: allow gpio hogs
-    (fetchurl {
-      url = "https://lore.kernel.org/all/20260504072748.2580172-1-zhengxingda@iscas.ac.cn/raw";
-      hash = "sha256-30d961Dcsey2kzgkkthJ2p5GB2hQnUqt8f9DGDtnhcc=";
-    })
     # [PATCH] arm64: dts: mediatek: mt8188-geralt: enable touchpad
     (fetchurl {
       url = "https://lore.kernel.org/all/20260504072846.2581096-1-zhengxingda@iscas.ac.cn/raw";
@@ -32,10 +26,10 @@ mobile-nixos.kernel-builder {
       url = "https://lore.kernel.org/linux-input/20260504-wip-fix-core-v3-3-ce1f11f4968f@kernel.org/raw";
       hash = "sha256-WFhmmvHn1wtdC5m2I73GaWkEF75aY0JeyFSFTdJ2+7w=";
     })
-    # [PATCH 1/3] wifi: mt76: mt7921: drop TXRX_NOTIFY on non-mmio buses
+    # [PATCH wireless] wifi: mt76: mt7921: check drv_pmctrl return in the PCIe reset path
     (fetchurl {
-      url = "https://lore.kernel.org/all/20260627191336.20223-2-lucid_duck@justthetip.ca/raw";
-      hash = "sha256-O/KDOa5uboNZedOgd5OZ+hfbB5l29gE/Uubk1UvzKSY=";
+      url = "https://lore.kernel.org/all/20260809012309.43657-1-lucid_duck@justthetip.ca/raw";
+      hash = "sha256-cpIh+ZJOldp7sMRgpdLz5ou2UbexNLAfAdBNIB1Pbto=";
     })
     ./pcie_wifi_bt.diff
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
