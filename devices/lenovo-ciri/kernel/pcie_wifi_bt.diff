@@ -33,63 +33,8 @@ index 231e6f35a..d6c75bd20 100644
  patternProperties:
    "@[0-9a-f]{1}$":
      type: object
-diff --git a/arch/arm64/boot/dts/mediatek/mt6359.dtsi b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
-index 45ad69ee4..a953fb527 100644
---- a/arch/arm64/boot/dts/mediatek/mt6359.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
-@@ -164,15 +164,8 @@ mt6359_vcn13_ldo_reg: ldo_vcn13 {
- 				regulator-min-microvolt = <900000>;
- 				regulator-max-microvolt = <1300000>;
- 			};
--			mt6359_vcn33_1_bt_ldo_reg: ldo_vcn33_1_bt {
--				regulator-name = "vcn33_1_bt";
--				regulator-min-microvolt = <2800000>;
--				regulator-max-microvolt = <3500000>;
--			};
--			mt6359_vcn33_1_wifi_ldo_reg: ldo_vcn33_1_wifi {
--				regulator-name = "vcn33_1_wifi";
--				regulator-min-microvolt = <2800000>;
--				regulator-max-microvolt = <3500000>;
-+			mt6359_vcn33_1_ldo_reg: ldo_vcn33_1 {
-+				regulator-name = "vcn33_1";
- 			};
- 			mt6359_vaux18_ldo_reg: ldo_vaux18 {
- 				regulator-name = "vaux18";
-@@ -231,15 +224,8 @@ mt6359_vemc_1_ldo_reg: ldo_vemc_1 {
- 				regulator-min-microvolt = <2500000>;
- 				regulator-max-microvolt = <3300000>;
- 			};
--			mt6359_vcn33_2_bt_ldo_reg: ldo_vcn33_2_bt {
--				regulator-name = "vcn33_2_bt";
--				regulator-min-microvolt = <2800000>;
--				regulator-max-microvolt = <3500000>;
--			};
--			mt6359_vcn33_2_wifi_ldo_reg: ldo_vcn33_2_wifi {
--				regulator-name = "vcn33_2_wifi";
--				regulator-min-microvolt = <2800000>;
--				regulator-max-microvolt = <3500000>;
-+			mt6359_vcn33_2_ldo_reg: ldo_vcn33_2 {
-+				regulator-name = "vcn33_2";
- 			};
- 			mt6359_va12_ldo_reg: ldo_va12 {
- 				regulator-name = "va12";
-diff --git a/arch/arm64/boot/dts/mediatek/mt8186-corsola-voltorb.dtsi b/arch/arm64/boot/dts/mediatek/mt8186-corsola-voltorb.dtsi
-index b495a241b..0250b4eea 100644
---- a/arch/arm64/boot/dts/mediatek/mt8186-corsola-voltorb.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8186-corsola-voltorb.dtsi
-@@ -73,6 +73,10 @@ &spmi {
- 	pmic@6 {
- 		compatible = "mediatek,mt6319-regulator", "mediatek,mt6315-regulator";
- 		reg = <0x6 SPMI_USID>;
-+		pvdd1-supply = <&pp4200_z2>;
-+		pvdd2-supply = <&pp4200_z2>;
-+		pvdd3-supply = <&pp4200_z2>;
-+		pvdd4-supply = <&pp4200_z2>;
- 
- 		regulators {
- 			mt6319_buck1: vbuck1 {
 diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
-index 8e423504e..d7b5eb95b 100644
+index 4cb23595d..28a84693a 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
 @@ -86,13 +86,11 @@ pp3300_z1: regulator-pp3300-z1 {
@@ -165,38 +110,7 @@ index 8e423504e..d7b5eb95b 100644
  };
  
  &adsp {
-@@ -217,6 +259,30 @@ &cam_vcore {
- 	domain-supply = <&mt6359_vproc1_buck_reg>;
- };
- 
-+&cpu0 {
-+	cpu-supply = <&mt6359_vcore_buck_reg>;
-+};
-+
-+&cpu1 {
-+	cpu-supply = <&mt6359_vcore_buck_reg>;
-+};
-+
-+&cpu2 {
-+	cpu-supply = <&mt6359_vcore_buck_reg>;
-+};
-+
-+&cpu3 {
-+	cpu-supply = <&mt6359_vcore_buck_reg>;
-+};
-+
-+&cpu4 {
-+	cpu-supply = <&mt6359_vcore_buck_reg>;
-+};
-+
-+&cpu5 {
-+	cpu-supply = <&mt6359_vcore_buck_reg>;
-+};
-+
- /*
-  * Geralt is the reference design and doesn't have target TDP.
-  * Ciri is (currently) the only device following Geralt, and its
-@@ -632,6 +698,22 @@ &pcie {
+@@ -656,6 +698,22 @@ &pcie {
  	pinctrl-names = "default";
  	pinctrl-0 = <&pcie_pins>;
  	status = "okay";
@@ -219,7 +133,7 @@ index 8e423504e..d7b5eb95b 100644
  };
  
  &pciephy {
-@@ -975,6 +1057,14 @@ pins-bus {
+@@ -999,6 +1057,13 @@ pins-bus {
  		};
  	};
  
@@ -227,14 +141,13 @@ index 8e423504e..d7b5eb95b 100644
 +		pins-kill {
 +			pinmux = <PINMUX_GPIO13__FUNC_B_GPIO13>,
 +				 <PINMUX_GPIO14__FUNC_B_GPIO14>;
-+			output-high;
 +		};
 +	};
 +
  	mipi_disp_avdd_en: mipi-disp-avdd-en-pins {
  		pins-en-ppvar-mipi-disp {
  			pinmux = <PINMUX_GPIO3__FUNC_B_GPIO3>;
-@@ -1139,6 +1229,13 @@ pins-bus {
+@@ -1163,6 +1228,13 @@ pins-bus {
  		};
  	};
  
@@ -248,31 +161,7 @@ index 8e423504e..d7b5eb95b 100644
  	wlan_en: wlan-en-pins {
  		pins-en-pp3300-wlan {
  			pinmux = <PINMUX_GPIO12__FUNC_B_GPIO12>;
-@@ -1149,6 +1246,23 @@ pins-en-pp3300-wlan {
- 
- &pmic {
- 	interrupts-extended = <&pio 222 IRQ_TYPE_LEVEL_HIGH>;
-+	vsys-smps-supply = <&pp4200_s5>;
-+	vsys-vcore-supply = <&pp4200_s5>;
-+	vsys-vgpu11-supply = <&pp4200_s5>;
-+	vsys-vgpu12-supply = <&pp4200_s5>;
-+	vsys-vpa-supply = <&pp4200_s5>;
-+	vsys-vproc1-supply = <&pp4200_s5>;
-+	vsys-vproc2-supply = <&pp4200_s5>;
-+	vsys-vpu-supply = <&pp4200_s5>;
-+	vsys-vs1-supply = <&pp4200_s5>;
-+	vsys-vs2-supply = <&pp4200_s5>;
-+	vsys-vmodem-supply = <&pp4200_s5>;
-+	vsys-ldo1-supply = <&pp4200_s5>;
-+	vsys-ldo2-supply = <&pp4200_s5>;
-+	vs1-ldo1-supply = <&mt6359_vs1_buck_reg>;
-+	vs1-ldo2-supply = <&mt6359_vs1_buck_reg>;
-+	vs2-ldo1-supply = <&mt6359_vs2_buck_reg>;
-+	vs2-ldo2-supply = <&mt6359_vs2_buck_reg>;
- };
- 
- &postmask0_in {
-@@ -1301,10 +1415,22 @@ vdosys1_ep_ext: endpoint@1 {
+@@ -1342,10 +1414,22 @@ vdosys1_ep_ext: endpoint@1 {
  };
  
  &xhci2 {
@@ -296,358 +185,18 @@ index 8e423504e..d7b5eb95b 100644
  };
  
  #include <arm/cros-ec-keyboard.dtsi>
-diff --git a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-index eadf1b2d1..079b4f490 100644
---- a/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8192-asurada.dtsi
-@@ -167,12 +167,22 @@ pp3300_wlan: regulator-3v3-wlan {
- 		regulator-name = "pp3300_wlan";
- 		regulator-always-on;
- 		regulator-boot-on;
--		regulator-min-microvolt = <3300000>;
--		regulator-max-microvolt = <3300000>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&pp3300_wlan_pins>;
- 		enable-active-high;
- 		gpio = <&pio 143 GPIO_ACTIVE_HIGH>;
-+		vin-supply = <&pp3300_g>;
-+	};
-+
-+	/* system wide switching 4.2V power rail */
-+	pp4200_g: regulator-4v2-g {
-+		compatible = "regulator-fixed";
-+		regulator-name = "pp4200_g";
-+		regulator-always-on;
-+		regulator-boot-on;
-+		regulator-min-microvolt = <4200000>;
-+		regulator-max-microvolt = <4200000>;
-+		vin-supply = <&ppvar_sys>;
- 	};
- 
- 	/* system wide switching 5.0V power rail */
-@@ -281,6 +291,32 @@ sound: sound {
- 		pinctrl-24 = <&aud_gpio_tdm_off_pins>;
- 		pinctrl-25 = <&aud_gpio_tdm_on_pins>;
- 	};
-+
-+	usb-a-connector {
-+		compatible = "usb-a-connector";
-+		vbus-supply = <&pp5000_a>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@0 {
-+				reg = <0>;
-+
-+				usb_a_u2_ep: endpoint {
-+					remote-endpoint = <&usb2_hub_p3_ep>;
-+				};
-+			};
-+
-+			port@1 {
-+				reg = <1>;
-+
-+				usb_a_u3_ep: endpoint {
-+					remote-endpoint = <&usb3_hub_p3_ep>;
-+				};
-+			};
-+		};
-+	};
- };
- 
- &afe {
-@@ -514,11 +550,12 @@ &nor_flash {
- 	assigned-clock-parents = <&topckgen CLK_TOP_UNIVPLL_D6_D8>;
- 
- 	flash@0 {
--		compatible = "winbond,w25q64jwm", "jedec,spi-nor";
-+		compatible = "jedec,spi-nor";
- 		reg = <0>;
- 		spi-max-frequency = <52000000>;
- 		spi-rx-bus-width = <2>;
- 		spi-tx-bus-width = <2>;
-+		vcc-supply = <&mt6359_vio18_ldo_reg>;
- 	};
- };
- 
-@@ -609,9 +646,9 @@ &pio {
- 			  "SD_DATA1",
- 			  "",
- 			  "",
-+			  "BT_KILL_1V8_L",
- 			  "",
--			  "",
--			  "",
-+			  "WIFI_KILL_1V8_L",
- 			  "",
- 			  "PCIE_WAKE_ODL",
- 			  "PCIE_RST_L",
-@@ -1306,6 +1343,23 @@ pins-miso-on {
- 
- &pmic {
- 	interrupts-extended = <&pio 214 IRQ_TYPE_LEVEL_HIGH>;
-+	vsys-smps-supply = <&pp4200_g>;
-+	vsys-vcore-supply = <&pp4200_g>;
-+	vsys-vgpu11-supply = <&pp4200_g>;
-+	vsys-vgpu12-supply = <&pp4200_g>;
-+	vsys-vpa-supply = <&pp4200_g>;
-+	vsys-vproc1-supply = <&pp4200_g>;
-+	vsys-vproc2-supply = <&pp4200_g>;
-+	vsys-vpu-supply = <&pp4200_g>;
-+	vsys-vs1-supply = <&pp4200_g>;
-+	vsys-vs2-supply = <&pp4200_g>;
-+	vsys-vmodem-supply = <&pp4200_g>;
-+	vsys-ldo1-supply = <&pp4200_g>;
-+	vsys-ldo2-supply = <&pp4200_g>;
-+	vs1-ldo1-supply = <&mt6359_vs1_buck_reg>;
-+	vs1-ldo2-supply = <&mt6359_vs1_buck_reg>;
-+	vs2-ldo1-supply = <&mt6359_vs2_buck_reg>;
-+	vs2-ldo2-supply = <&mt6359_vs2_buck_reg>;
- };
- 
- &pwm0 {
-@@ -1367,6 +1421,7 @@ mt6360_ldo3_reg: regulator@0 {
- 			reg = <0>;
- 			regulator-min-microvolt = <1800000>;
- 			regulator-max-microvolt = <3300000>;
-+			vin-supply = <&pp4200_g>;
- 		};
- 
- 		mt6360_ldo5_reg: regulator@1 {
-@@ -1374,6 +1429,7 @@ mt6360_ldo5_reg: regulator@1 {
- 			reg = <1>;
- 			regulator-min-microvolt = <3300000>;
- 			regulator-max-microvolt = <3300000>;
-+			vin-supply = <&pp4200_g>;
- 		};
- 
- 		typec {
-@@ -1427,6 +1483,10 @@ &spmi {
- 	mt6315_6: pmic@6 {
- 		compatible = "mediatek,mt6315-regulator";
- 		reg = <0x6 SPMI_USID>;
-+		pvdd1-supply = <&pp4200_g>;
-+		pvdd2-supply = <&pp4200_g>;
-+		pvdd3-supply = <&pp4200_g>;
-+		pvdd4-supply = <&pp4200_g>;
- 
- 		regulators {
- 			mt6315_6_vbuck1: vbuck1 {
-@@ -1452,6 +1512,10 @@ mt6315_6_vbuck3: vbuck3 {
- 	mt6315_7: pmic@7 {
- 		compatible = "mediatek,mt6315-regulator";
- 		reg = <0x7 SPMI_USID>;
-+		pvdd1-supply = <&pp4200_g>;
-+		pvdd2-supply = <&pp4200_g>;
-+		pvdd3-supply = <&pp4200_g>;
-+		pvdd4-supply = <&pp4200_g>;
- 
- 		regulators {
- 			mt6315_7_vbuck1: vbuck1 {
-@@ -1472,11 +1536,53 @@ &uart0 {
- };
- 
- &xhci {
--	status = "okay";
--
- 	wakeup-source;
- 	vusb33-supply = <&pp3300_g>;
--	vbus-supply = <&pp5000_a>;
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	status = "okay";
-+
-+	usb3_hub: usb-hub@1 {
-+		compatible = "usb5e3,620";
-+		reg = <1>;
-+		reset-gpios = <&pio 44 GPIO_ACTIVE_LOW>;
-+		vdd-supply = <&pp5000_a>;
-+		peer-hub = <&usb2_hub>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@3 {
-+				reg = <3>;
-+
-+				usb3_hub_p3_ep: endpoint {
-+					remote-endpoint = <&usb_a_u3_ep>;
-+				};
-+			};
-+		};
-+	};
-+
-+	usb2_hub: usb-hub@2 {
-+		compatible = "usb5e3,610";
-+		reg = <2>;
-+		reset-gpios = <&pio 44 GPIO_ACTIVE_LOW>;
-+		vdd-supply = <&pp5000_a>;
-+		peer-hub = <&usb3_hub>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@3 {
-+				reg = <3>;
-+
-+				usb2_hub_p3_ep: endpoint {
-+					remote-endpoint = <&usb_a_u2_ep>;
-+				};
-+			};
-+		};
-+	};
- };
- 
- #include <arm/cros-ec-keyboard.dtsi>
 diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-index f1ff64a84..b21cbe918 100644
+index ef7afc436..8d4cc30d9 100644
 --- a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
 +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
-@@ -47,6 +47,17 @@ memory@40000000 {
- 		reg = <0 0x40000000 0 0x80000000>;
- 	};
- 
-+	/* system critical LDO 1.8V power rail */
-+	pp1800_ldo_z2: regulator-pp1800-ldo-z2 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "pp1800_ldo_z2";
-+		regulator-always-on;
-+		regulator-boot-on;
-+		regulator-min-microvolt = <3300000>;
-+		regulator-max-microvolt = <3300000>;
-+		vin-supply = <&pp3300_z2>;
-+	};
-+
- 	pp3300_disp_x: regulator-pp3300-disp-x {
- 		compatible = "regulator-fixed";
- 		regulator-name = "pp3300_disp_x";
-@@ -138,6 +149,52 @@ ppvar_sys: regulator-ppvar-sys {
- 		regulator-boot-on;
- 	};
- 
-+	usb_vbus: regulator-5v0-usb-vbus {
-+		compatible = "regulator-fixed";
-+		regulator-name = "usb-vbus";
-+		enable-active-high;
-+		vin-supply = <&pp5000_s5>;
-+	};
-+
-+	reserved_memory: reserved-memory {
-+		#address-cells = <2>;
-+		#size-cells = <2>;
-+		ranges;
-+
-+		scp_mem: memory@50000000 {
-+			compatible = "shared-dma-pool";
-+			reg = <0 0x50000000 0 0x2900000>;
-+			no-map;
-+		};
-+
-+		adsp_mem: memory@60000000 {
-+			compatible = "shared-dma-pool";
-+			reg = <0 0x60000000 0 0xd80000>;
-+			no-map;
-+		};
-+
-+		afe_mem: memory@60d80000 {
-+			compatible = "shared-dma-pool";
-+			reg = <0 0x60d80000 0 0x100000>;
-+			no-map;
-+		};
-+
-+		adsp_device_mem: memory@60e80000 {
-+			compatible = "shared-dma-pool";
-+			reg = <0 0x60e80000 0 0x280000>;
-+			no-map;
-+		};
-+	};
-+
-+	spk_amplifier: rt1019p {
-+		compatible = "realtek,rt1019p";
-+		label = "rt1019p";
-+		#sound-dai-cells = <0>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&rt1019p_pins_default>;
-+		sdb-gpios = <&pio 100 GPIO_ACTIVE_HIGH>;
-+	};
-+
- 	/* Murata NCP03WF104F05RL */
- 	tboard_thermistor1: thermal-sensor-t1 {
- 		compatible = "generic-adc-thermal";
-@@ -209,52 +266,71 @@ tboard_thermistor2: thermal-sensor-t2 {
+@@ -266,6 +266,47 @@ tboard_thermistor2: thermal-sensor-t2 {
+ 						120000 51
  						125000 44>;
  	};
- 
--	usb_vbus: regulator-5v0-usb-vbus {
--		compatible = "regulator-fixed";
--		regulator-name = "usb-vbus";
--		regulator-min-microvolt = <5000000>;
--		regulator-max-microvolt = <5000000>;
--		enable-active-high;
--		regulator-always-on;
--	};
-+	usb-a-connector {
-+		compatible = "usb-a-connector";
-+		vbus-supply = <&usb_vbus>;
- 
--	reserved_memory: reserved-memory {
--		#address-cells = <2>;
--		#size-cells = <2>;
--		ranges;
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
- 
--		scp_mem: memory@50000000 {
--			compatible = "shared-dma-pool";
--			reg = <0 0x50000000 0 0x2900000>;
--			no-map;
--		};
-+			port@0 {
-+				reg = <0>;
- 
--		adsp_mem: memory@60000000 {
--			compatible = "shared-dma-pool";
--			reg = <0 0x60000000 0 0xd80000>;
--			no-map;
--		};
-+				usb_a_u2_ep: endpoint {
-+					remote-endpoint = <&usb2_hub_p3_ep>;
-+				};
-+			};
- 
--		afe_mem: memory@60d80000 {
--			compatible = "shared-dma-pool";
--			reg = <0 0x60d80000 0 0x100000>;
--			no-map;
--		};
-+			port@1 {
-+				reg = <1>;
- 
--		adsp_device_mem: memory@60e80000 {
--			compatible = "shared-dma-pool";
--			reg = <0 0x60e80000 0 0x280000>;
--			no-map;
-+				usb_a_u3_ep: endpoint {
-+					remote-endpoint = <&usb3_hub_p3_ep>;
-+				};
-+			};
- 		};
- 	};
- 
--	spk_amplifier: rt1019p {
--		compatible = "realtek,rt1019p";
--		label = "rt1019p";
--		#sound-dai-cells = <0>;
++
 +	wifi-bt-connector {
 +		compatible = "pcie-m2-e-connector";
- 		pinctrl-names = "default";
--		pinctrl-0 = <&rt1019p_pins_default>;
--		sdb-gpios = <&pio 100 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
 +		pinctrl-0 = <&m2_e_key_kill_pins>;
 +		vpcie3v3-supply = <&pp3300_wlan>;
 +		w-disable1-gpios = <&pio 61 GPIO_ACTIVE_LOW>;
@@ -684,29 +233,11 @@ index f1ff64a84..b21cbe918 100644
 +
 +			/* SDIO, UART and I2S not implemented */
 +		};
- 	};
++	};
  };
  
-@@ -707,8 +783,8 @@ &mmc1 {
- 	pinctrl-1 = <&mmc1_pins_default>;
- 	sd-uhs-sdr50;
- 	sd-uhs-sdr104;
--	vmmc-supply = <&mt_pmic_vmch_ldo_reg>;
--	vqmmc-supply = <&mt_pmic_vmc_ldo_reg>;
-+	vmmc-supply = <&pp3000_sd>;
-+	vqmmc-supply = <&pp3000_vmc_pmu>;
- };
- 
- &mt6359codec {
-@@ -763,6 +839,7 @@ flash@0 {
- 		spi-max-frequency = <52000000>;
- 		spi-rx-bus-width = <2>;
- 		spi-tx-bus-width = <2>;
-+		vcc-supply = <&pp1800_ldo_z2>;
- 	};
- };
- 
-@@ -780,14 +857,14 @@ pcie@0 {
+ &adsp {
+@@ -791,14 +832,14 @@ pcie@0 {
  		reg = <0 0 0 0 0>;
  		device_type = "pci";
  		num-lanes = <1>;
@@ -725,7 +256,7 @@ index f1ff64a84..b21cbe918 100644
  		};
  	};
  };
-@@ -1074,6 +1151,14 @@ pins-bus {
+@@ -1085,6 +1126,13 @@ pins-bus {
  		};
  	};
  
@@ -733,153 +264,18 @@ index f1ff64a84..b21cbe918 100644
 +		pins-kill {
 +			pinmux = <PINMUX_GPIO61__FUNC_GPIO61>,
 +				 <PINMUX_GPIO59__FUNC_GPIO59>;
-+			output-high;
 +		};
 +	};
 +
  	mmc0_pins_default: mmc0-default-pins {
  		pins-cmd-dat {
  			pinmux = <PINMUX_GPIO126__FUNC_MSDC0_DAT0>,
-@@ -1312,6 +1397,23 @@ pins-report-sw {
- 
- &pmic {
- 	interrupts-extended = <&pio 222 IRQ_TYPE_LEVEL_HIGH>;
-+	vsys-smps-supply = <&pp4200_z2>;
-+	vsys-vcore-supply = <&pp4200_z2>;
-+	vsys-vgpu11-supply = <&pp4200_z2>;
-+	vsys-vgpu12-supply = <&pp4200_z2>;
-+	vsys-vpa-supply = <&pp4200_z2>;
-+	vsys-vproc1-supply = <&pp4200_z2>;
-+	vsys-vproc2-supply = <&pp4200_z2>;
-+	vsys-vpu-supply = <&pp4200_z2>;
-+	vsys-vs1-supply = <&pp4200_z2>;
-+	vsys-vs2-supply = <&pp4200_z2>;
-+	vsys-vmodem-supply = <&pp4200_z2>;
-+	vsys-ldo1-supply = <&pp4200_z2>;
-+	vsys-ldo2-supply = <&pp4200_z2>;
-+	vs1-ldo1-supply = <&mt6359_vs1_buck_reg>;
-+	vs1-ldo2-supply = <&mt6359_vs1_buck_reg>;
-+	vs2-ldo1-supply = <&mt6359_vs2_buck_reg>;
-+	vs2-ldo2-supply = <&mt6359_vs2_buck_reg>;
- };
- 
- &scp {
-@@ -1408,20 +1510,22 @@ i2c_tunnel: i2c-tunnel {
- 			#size-cells = <0>;
- 		};
- 
--		mt_pmic_vmc_ldo_reg: regulator@0 {
-+		pp3000_vmc_pmu: regulator@0 {
- 			compatible = "google,cros-ec-regulator";
- 			reg = <0>;
--			regulator-name = "mt_pmic_vmc_ldo";
-+			regulator-name = "pp3000_vmc_pmu";
- 			regulator-min-microvolt = <1200000>;
- 			regulator-max-microvolt = <3600000>;
-+			vin-supply = <&pp4200_z2>;
- 		};
- 
--		mt_pmic_vmch_ldo_reg: regulator@1 {
-+		pp3000_sd: regulator@1 {
- 			compatible = "google,cros-ec-regulator";
- 			reg = <1>;
--			regulator-name = "mt_pmic_vmch_ldo";
-+			regulator-name = "pp3000_sd";
- 			regulator-min-microvolt = <2700000>;
- 			regulator-max-microvolt = <3600000>;
-+			vin-supply = <&pp4200_z2>;
- 		};
- 
- 		typec {
-@@ -1455,6 +1559,10 @@ &spmi {
- 	mt6315@6 {
- 		compatible = "mediatek,mt6315-regulator";
- 		reg = <0x6 SPMI_USID>;
-+		pvdd1-supply = <&pp4200_z2>;
-+		pvdd2-supply = <&pp4200_z2>;
-+		pvdd3-supply = <&pp4200_z2>;
-+		pvdd4-supply = <&pp4200_z2>;
- 
- 		regulators {
- 			mt6315_6_vbuck1: vbuck1 {
-@@ -1472,6 +1580,10 @@ mt6315_6_vbuck1: vbuck1 {
- 	mt6315@7 {
- 		compatible = "mediatek,mt6315-regulator";
- 		reg = <0x7 SPMI_USID>;
-+		pvdd1-supply = <&pp4200_z2>;
-+		pvdd2-supply = <&pp4200_z2>;
-+		pvdd3-supply = <&pp4200_z2>;
-+		pvdd4-supply = <&pp4200_z2>;
- 
- 		regulators {
- 			mt6315_7_vbuck1: vbuck1 {
-@@ -1584,22 +1696,82 @@ vdosys1_ep_ext: endpoint@1 {
- };
- 
- &xhci0 {
-+	rx-fifo-depth = <3072>;
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	vusb33-supply = <&mt6359_vusb_ldo_reg>;
- 	status = "okay";
- 
--	rx-fifo-depth = <3072>;
--	vbus-supply = <&usb_vbus>;
-+	usb3_hub: usb-hub@1 {
-+		compatible = "usb5e3,620";
-+		reg = <1>;
-+		reset-gpios = <&pio 84 GPIO_ACTIVE_LOW>;
-+		vdd-supply = <&pp5000_s5>;
-+		peer-hub = <&usb2_hub>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@3 {
-+				reg = <3>;
-+
-+				usb3_hub_p3_ep: endpoint {
-+					remote-endpoint = <&usb_a_u3_ep>;
-+				};
-+			};
-+		};
-+	};
-+
-+	usb2_hub: usb-hub@2 {
-+		compatible = "usb5e3,610";
-+		reg = <2>;
-+		reset-gpios = <&pio 84 GPIO_ACTIVE_LOW>;
-+		vdd-supply = <&pp5000_s5>;
-+		peer-hub = <&usb3_hub>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@3 {
-+				reg = <3>;
-+
-+				usb2_hub_p3_ep: endpoint {
-+					remote-endpoint = <&usb_a_u2_ep>;
-+				};
-+			};
-+		};
-+	};
- };
- 
- &xhci2 {
--	status = "okay";
- 	vbus-supply = <&usb_vbus>;
-+	vusb33-supply = <&mt6359_vusb_ldo_reg>;
-+	status = "okay";
- };
- 
+@@ -1637,9 +1685,24 @@ &xhci2 {
  &xhci3 {
  	/* MT7921's USB Bluetooth has issues with USB2 LPM */
  	usb2-lpm-disable;
 -	vbus-supply = <&pp3300_wlan>;
-+	vusb33-supply = <&mt6359_vusb_ldo_reg>;
+ 	vusb33-supply = <&mt6359_vusb_ldo_reg>;
  	status = "okay";
 +
 +	ports {
@@ -900,192 +296,113 @@ index f1ff64a84..b21cbe918 100644
  };
  
  #include <arm/cros-ec-keyboard.dtsi>
-diff --git a/arch/arm64/boot/dts/mediatek/mt8390-genio-common.dtsi b/arch/arm64/boot/dts/mediatek/mt8390-genio-common.dtsi
-index 2062506f6..ae11cd73e 100644
---- a/arch/arm64/boot/dts/mediatek/mt8390-genio-common.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8390-genio-common.dtsi
-@@ -445,7 +445,7 @@ typec-mux@48 {
- 		mode-switch;
- 		orientation-switch;
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index e08eadd66..62c6221d6 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -1099,6 +1099,31 @@ int fwnode_irq_get_byname(const struct fwnode_handle *fwnode, const char *name)
+ }
+ EXPORT_SYMBOL(fwnode_irq_get_byname);
  
--		vcc-supply = <&mt6359_vcn33_1_bt_ldo_reg>;
-+		vcc-supply = <&mt6359_vcn33_1_ldo_reg>;
++/**
++ * fwnode_graph_get_next_port_endpoint - Get next endpoint firmware node in port
++ * @port: Pointer to the target port firmware node
++ * @prev: Previous endpoint node or %NULL to get the first
++ *
++ * The caller is responsible for calling fwnode_handle_put() on the returned
++ * fwnode pointer. Note that this function also puts a reference to @prev
++ * unconditionally.
++ *
++ * Return: an endpoint firmware node pointer or %NULL if no more endpoints
++ * are available.
++ */
++struct fwnode_handle *fwnode_graph_get_next_port_endpoint(const struct fwnode_handle *port,
++							  struct fwnode_handle *prev)
++{
++	do {
++		prev = fwnode_get_next_child_node(port, prev);
++		if (fwnode_name_eq(prev, "endpoint"))
++			break;
++	} while (prev);
++
++	return prev;
++}
++EXPORT_SYMBOL_GPL(fwnode_graph_get_next_port_endpoint);
++
+ /**
+  * fwnode_graph_get_next_endpoint - Get next endpoint firmware node
+  * @fwnode: Pointer to the parent firmware node
+@@ -1346,6 +1371,35 @@ int fwnode_graph_parse_endpoint(const struct fwnode_handle *fwnode,
+ }
+ EXPORT_SYMBOL(fwnode_graph_parse_endpoint);
  
- 		port {
- 			it5205_sbu_mux: endpoint {
-@@ -637,7 +637,7 @@ &mt6359_vcn18_ldo_reg {
- 	regulator-always-on;
- };
- 
--&mt6359_vcn33_2_bt_ldo_reg {
-+&mt6359_vcn33_2_ldo_reg {
- 	regulator-name = "vcn33_2_pmu";
- 	regulator-always-on;
- };
-diff --git a/arch/arm64/boot/dts/mediatek/mt8390-grinn-genio-som.dtsi b/arch/arm64/boot/dts/mediatek/mt8390-grinn-genio-som.dtsi
-index 8da47c916..84064511f 100644
---- a/arch/arm64/boot/dts/mediatek/mt8390-grinn-genio-som.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8390-grinn-genio-som.dtsi
-@@ -58,7 +58,7 @@ &mt6359_vcn18_ldo_reg {
- 	regulator-always-on;
- };
- 
--&mt6359_vcn33_2_bt_ldo_reg {
-+&mt6359_vcn33_2_ldo_reg {
- 	regulator-name = "vcn33_2_pmu";
- 	regulator-always-on;
- };
-diff --git a/arch/arm64/boot/dts/mediatek/mt8390-tungsten-smarc.dtsi b/arch/arm64/boot/dts/mediatek/mt8390-tungsten-smarc.dtsi
-index 40b381d4c..2e68e997d 100644
---- a/arch/arm64/boot/dts/mediatek/mt8390-tungsten-smarc.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8390-tungsten-smarc.dtsi
-@@ -592,7 +592,7 @@ &mmc2 {
- 	interrupt-names = "msdc", "sdio_wakeup";
- 	interrupts-extended = <&gic GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH 0>,
- 			      <&pio 172 IRQ_TYPE_LEVEL_LOW>;
--	vmmc-supply = <&mt6359_vcn33_2_bt_ldo_reg>;
-+	vmmc-supply = <&mt6359_vcn33_2_ldo_reg>;
- 	vqmmc-supply = <&mt6359_vcn18_ldo_reg>;
- 	mmc-pwrseq = <&wifi_pwrseq>;
- 	status = "okay";
-@@ -617,12 +617,12 @@ &mt6359_vcn18_ldo_reg {
- 	regulator-boot-on;
- };
- 
--&mt6359_vcn33_1_bt_ldo_reg {
-+&mt6359_vcn33_1_ldo_reg {
- 	regulator-name = "vcn33_1_pmu";
- 	regulator-always-on;
- };
- 
--&mt6359_vcn33_2_bt_ldo_reg {
-+&mt6359_vcn33_2_ldo_reg {
- 	regulator-name = "vcn33_2_pmu";
- 	regulator-min-microvolt = <3300000>;
- 	regulator-max-microvolt = <3300000>;
-diff --git a/arch/arm64/boot/dts/mediatek/mt8395-genio-common.dtsi b/arch/arm64/boot/dts/mediatek/mt8395-genio-common.dtsi
-index 62c336e21..4259291a5 100644
---- a/arch/arm64/boot/dts/mediatek/mt8395-genio-common.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8395-genio-common.dtsi
-@@ -701,7 +701,7 @@ &mt6359_vcamio_ldo_reg {
- 	regulator-always-on;
- };
- 
--&mt6359_vcn33_2_bt_ldo_reg {
-+&mt6359_vcn33_2_ldo_reg {
- 	regulator-min-microvolt = <3300000>;
- 	regulator-max-microvolt = <3300000>;
- };
-@@ -1216,8 +1216,8 @@ can0: can@0 {
- 		clocks = <&can_clk>;
- 		spi-max-frequency = <20000000>;
- 		interrupts-extended = <&pio 16 IRQ_TYPE_LEVEL_LOW>;
--		vdd-supply = <&mt6359_vcn33_2_bt_ldo_reg>;
--		xceiver-supply = <&mt6359_vcn33_2_bt_ldo_reg>;
-+		vdd-supply = <&mt6359_vcn33_2_ldo_reg>;
-+		xceiver-supply = <&mt6359_vcn33_2_ldo_reg>;
- 	};
- };
- 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8395-radxa-nio-12l-8-hd-panel.dtso b/arch/arm64/boot/dts/mediatek/mt8395-radxa-nio-12l-8-hd-panel.dtso
-index 0389c9cb8..ecc9fd27b 100644
---- a/arch/arm64/boot/dts/mediatek/mt8395-radxa-nio-12l-8-hd-panel.dtso
-+++ b/arch/arm64/boot/dts/mediatek/mt8395-radxa-nio-12l-8-hd-panel.dtso
-@@ -29,7 +29,7 @@ panel@0 {
- 		compatible = "radxa,display-8hd-ad002", "jadard,jd9365da-h3";
- 		reg = <0>;
- 		backlight = <&backlight>;
--		vdd-supply = <&mt6359_vcn33_2_bt_ldo_reg>;
-+		vdd-supply = <&mt6359_vcn33_2_ldo_reg>;
- 		vccio-supply = <&mt6360_ldo2>;
- 		reset-gpios = <&pio 108 GPIO_ACTIVE_LOW>;
- 		pinctrl-names = "default";
-@@ -57,7 +57,7 @@ touchscreen@14 {
- 		interrupts-extended = <&pio 132 IRQ_TYPE_EDGE_RISING>;
- 		irq-gpios = <&pio 132 GPIO_ACTIVE_HIGH>;
- 		reset-gpios = <&pio 133 GPIO_ACTIVE_HIGH>;
--		VDDIO-supply = <&mt6359_vcn33_2_bt_ldo_reg>;
-+		VDDIO-supply = <&mt6359_vcn33_2_ldo_reg>;
- 		pinctrl-names = "default";
- 		pinctrl-0 = <&touch_pins>;
- 	};
-diff --git a/arch/arm64/boot/dts/mediatek/mt8395-radxa-nio-12l.dts b/arch/arm64/boot/dts/mediatek/mt8395-radxa-nio-12l.dts
-index bf91305e8..453043401 100644
---- a/arch/arm64/boot/dts/mediatek/mt8395-radxa-nio-12l.dts
-+++ b/arch/arm64/boot/dts/mediatek/mt8395-radxa-nio-12l.dts
-@@ -614,7 +614,7 @@ &mt6359_vcamio_ldo_reg {
- 	regulator-always-on;
- };
- 
--&mt6359_vcn33_2_bt_ldo_reg {
-+&mt6359_vcn33_2_ldo_reg {
- 	regulator-min-microvolt = <3300000>;
- 	regulator-max-microvolt = <3300000>;
- };
++/**
++ * fwnode_graph_get_port_by_id - get the port matching a given id
++ * @fwnode: parent fwnode_handle containing the graph
++ * @id: id of the port
++ * @flags: fwnode lookup flags
++ *
++ * The caller is responsible for calling fwnode_handle_put() on the returned
++ * fwnode pointer.
++ *
++ * Does not return ports that belong to disabled devices or endpoints that
++ * are unconnected, unless FWNODE_GRAPH_DEVICE_DISABLED is passed in @flags.
++ *
++ * Return: A 'port' firmware node pointer with refcount incremented.
++ */
++struct fwnode_handle *fwnode_graph_get_port_by_id(struct fwnode_handle *fwnode,
++						  u32 id,
++						  unsigned long flags)
++{
++	struct fwnode_handle *ep;
++
++	ep = fwnode_graph_get_endpoint_by_id(fwnode, id, 0,
++					     flags | FWNODE_GRAPH_ENDPOINT_NEXT);
++	if (!ep)
++		return NULL;
++
++	return fwnode_get_next_parent(ep);
++}
++EXPORT_SYMBOL_GPL(fwnode_graph_get_port_by_id);
++
+ const void *device_get_match_data(const struct device *dev)
+ {
+ 	return fwnode_call_ptr_op(dev_fwnode(dev), device_get_match_data, dev);
 diff --git a/drivers/power/sequencing/core.c b/drivers/power/sequencing/core.c
-index 4dff71be1..67f7fb777 100644
+index 02f42da91..701728e60 100644
 --- a/drivers/power/sequencing/core.c
 +++ b/drivers/power/sequencing/core.c
-@@ -612,6 +612,7 @@ struct pwrseq_match_data {
- 	struct pwrseq_desc *desc;
- 	struct device *dev;
- 	const char *target;
-+	int index;
- };
- 
- static int pwrseq_match_device(struct device *pwrseq_dev, void *data)
-@@ -627,7 +628,7 @@ static int pwrseq_match_device(struct device *pwrseq_dev, void *data)
- 	if (!device_is_registered(&pwrseq->dev))
- 		return 0;
- 
--	ret = pwrseq->match(pwrseq, match_data->dev);
-+	ret = pwrseq->match(pwrseq, match_data->dev, match_data->index);
- 	if (ret == PWRSEQ_NO_MATCH || ret < 0)
- 		return ret;
- 
-@@ -655,16 +656,18 @@ static int pwrseq_match_device(struct device *pwrseq_dev, void *data)
+@@ -968,6 +968,25 @@ int pwrseq_power_off(struct pwrseq_desc *desc)
  }
+ EXPORT_SYMBOL_GPL(pwrseq_power_off);
  
++/**
++ * pwrseq_get_state() - Queries the last requested state of the power sequencer.
++ * @desc: Descriptor referencing the power sequencer.
++ *
++ * This returns the last requested state of the power sequencer.
++ *
++ * Returns:
++ * On success, PWRSEQ_STATE_ON for on and PWRSEQ_STATE_OFF for off;
++ * negative error number on failure.
++ */
++int pwrseq_get_state(struct pwrseq_desc *desc)
++{
++	if (!desc)
++		return -EINVAL;
++
++	return desc->powered_on ? PWRSEQ_STATE_ON : PWRSEQ_STATE_OFF;
++}
++EXPORT_SYMBOL_GPL(pwrseq_get_state);
++
  /**
-- * pwrseq_get() - Get the power sequencer associated with this device.
-+ * pwrseq_get_index() - Get the power sequencer associated with this device.
-  * @dev: Device for which to get the sequencer.
-  * @target: Name of the target exposed by the sequencer this device wants to
-  *          reach.
-+ * @index: Index of the sequencer associated with the device.
-  *
-  * Returns:
-  * New power sequencer descriptor for use by the consumer driver or ERR_PTR()
-  * on failure.
-  */
--struct pwrseq_desc *pwrseq_get(struct device *dev, const char *target)
-+struct pwrseq_desc *pwrseq_get_index(struct device *dev, const char *target,
-+				     int index)
- {
- 	struct pwrseq_match_data match_data;
- 	int ret;
-@@ -676,6 +679,7 @@ struct pwrseq_desc *pwrseq_get(struct device *dev, const char *target)
- 	match_data.desc = desc;
- 	match_data.dev = dev;
- 	match_data.target = target;
-+	match_data.index = index;
- 
- 	guard(rwsem_read)(&pwrseq_sem);
- 
-@@ -689,7 +693,7 @@ struct pwrseq_desc *pwrseq_get(struct device *dev, const char *target)
- 
- 	return_ptr(desc);
- }
--EXPORT_SYMBOL_GPL(pwrseq_get);
-+EXPORT_SYMBOL_GPL(pwrseq_get_index);
- 
- /**
-  * pwrseq_put() - Release the power sequencer descriptor.
+  * pwrseq_to_device() - Get the pwrseq device pointer from a descriptor.
+  * @desc: Descriptor referencing the power sequencer.
 diff --git a/drivers/power/sequencing/pwrseq-pcie-m2.c b/drivers/power/sequencing/pwrseq-pcie-m2.c
-index ef69ae268..a5585f000 100644
+index ddfe6ca82..b713682a0 100644
 --- a/drivers/power/sequencing/pwrseq-pcie-m2.c
 +++ b/drivers/power/sequencing/pwrseq-pcie-m2.c
-@@ -62,46 +62,46 @@ static const struct pwrseq_unit_data *pwrseq_pcie_m2_unit_deps[] = {
+@@ -69,46 +69,60 @@ static const struct pwrseq_unit_data *pwrseq_pcie_m2_unit_deps[] = {
  	NULL
  };
  
@@ -1107,8 +424,15 @@ index ef69ae268..a5585f000 100644
  
 -static const struct pwrseq_unit_data pwrseq_pcie_m2_e_uart_unit_data = {
 -	.name = "uart-enable",
-+static const struct pwrseq_unit_data pwrseq_pcie_m2_e_bt_unit_data = {
-+	.name = "bt-enable",
++/*
++ * XXX There are two Bluetooth units to allow either one to be able to power
++ * off and thus reset the controller. In practice only one of the interfaces
++ * is used, so there is no conflict. However userspace could power off the
++ * USB unit by disabling the associated USB port, without the UART unit or
++ * its consumer ever knowing.
++ */
++static const struct pwrseq_unit_data pwrseq_pcie_m2_e_bt_uart_unit_data = {
++	.name = "bt-uart-enable",
  	.deps = pwrseq_pcie_m2_unit_deps,
 -	.enable = pwrseq_pci_m2_e_uart_enable,
 -	.disable = pwrseq_pci_m2_e_uart_disable,
@@ -1117,6 +441,13 @@ index ef69ae268..a5585f000 100644
  };
  
 -static int pwrseq_pci_m2_e_pcie_enable(struct pwrseq_device *pwrseq)
++static const struct pwrseq_unit_data pwrseq_pcie_m2_e_bt_usb_unit_data = {
++	.name = "bt-usb-enable",
++	.deps = pwrseq_pcie_m2_unit_deps,
++	.enable = pwrseq_pci_m2_e_bt_enable,
++	.disable = pwrseq_pci_m2_e_bt_disable,
++};
++
 +static int pwrseq_pci_m2_e_wifi_enable(struct pwrseq_device *pwrseq)
  {
  	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
@@ -1144,18 +475,18 @@ index ef69ae268..a5585f000 100644
  };
  
  static const struct pwrseq_unit_data pwrseq_pcie_m2_m_pcie_unit_data = {
-@@ -123,13 +123,24 @@ static int pwrseq_pcie_m2_e_pwup_delay(struct pwrseq_device *pwrseq)
+@@ -130,13 +144,24 @@ static int pwrseq_pcie_m2_e_pwup_delay(struct pwrseq_device *pwrseq)
  
  static const struct pwrseq_target_data pwrseq_pcie_m2_e_uart_target_data = {
  	.name = "uart",
 -	.unit = &pwrseq_pcie_m2_e_uart_unit_data,
-+	.unit = &pwrseq_pcie_m2_e_bt_unit_data,
++	.unit = &pwrseq_pcie_m2_e_bt_uart_unit_data,
  	.post_enable = pwrseq_pcie_m2_e_pwup_delay,
  };
  
 +static const struct pwrseq_target_data pwrseq_pcie_m2_e_usb_target_data = {
 +	.name = "usb",
-+	.unit = &pwrseq_pcie_m2_e_bt_unit_data,
++	.unit = &pwrseq_pcie_m2_e_bt_usb_unit_data,
 +};
 +
  static const struct pwrseq_target_data pwrseq_pcie_m2_e_pcie_target_data = {
@@ -1171,7 +502,7 @@ index ef69ae268..a5585f000 100644
  	.post_enable = pwrseq_pcie_m2_e_pwup_delay,
  };
  
-@@ -140,7 +151,9 @@ static const struct pwrseq_target_data pwrseq_pcie_m2_m_pcie_target_data = {
+@@ -147,7 +172,9 @@ static const struct pwrseq_target_data pwrseq_pcie_m2_m_pcie_target_data = {
  
  static const struct pwrseq_target_data *pwrseq_pcie_m2_e_targets[] = {
  	&pwrseq_pcie_m2_e_pcie_target_data,
@@ -1181,110 +512,81 @@ index ef69ae268..a5585f000 100644
  	NULL
  };
  
-@@ -158,19 +171,35 @@ static const struct pwrseq_pcie_m2_pdata pwrseq_pcie_m2_m_of_data = {
- };
- 
- static int pwrseq_pcie_m2_match(struct pwrseq_device *pwrseq,
--				 struct device *dev)
-+				 struct device *dev, int index)
- {
- 	struct pwrseq_pcie_m2_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
- 	struct device_node *endpoint __free(device_node) = NULL;
- 
- 	/*
- 	 * Traverse the 'remote-endpoint' nodes and check if the remote node's
--	 * parent matches the OF node of 'dev'.
-+	 * parent matches the OF node of 'dev' and the port number matches
-+	 * 'index'.
+@@ -175,9 +202,16 @@ static int pwrseq_pcie_m2_match(struct pwrseq_device *pwrseq,
+ 	 * parent matches the OF node of 'dev'.
  	 */
  	for_each_endpoint_of_node(ctx->of_node, endpoint) {
-+		struct device_node *remote_ep __free(device_node) =
-+				of_graph_get_remote_endpoint(endpoint);
- 		struct device_node *remote __free(device_node) =
--				of_graph_get_remote_port_parent(endpoint);
--		if (remote && (remote == dev_of_node(dev)))
-+				of_graph_get_port_parent(remote_ep);
-+		struct of_endpoint ep;
-+
-+		if (!remote)
-+			continue;
-+		if (remote != dev_of_node(dev))
-+			continue;
-+		/* For existing users of pwrseq_get(): index = -1 */
-+		if (index < 0)
++		/* USB port devices are tied to the port nodes. */
++		struct device_node *remote_port __free(device_node) =
++				of_graph_get_remote_port(endpoint);
++		if (device_match_of_node(dev, remote_port))
 +			return PWRSEQ_MATCH_OK;
 +
-+		/* Check if the remote endpoint's port matches 'index'. */
-+		if (of_graph_parse_endpoint(remote_ep, &ep) < 0)
-+			continue;
-+		if (ep.port == index)
++		/* Try the remote port parent for other types. */
+ 		struct device_node *remote __free(device_node) =
+ 				of_graph_get_remote_port_parent(endpoint);
+-		if (remote && (remote == dev_of_node(dev)))
++		if (device_match_of_node(dev, remote))
  			return PWRSEQ_MATCH_OK;
  	}
  
-diff --git a/drivers/power/sequencing/pwrseq-qcom-wcn.c b/drivers/power/sequencing/pwrseq-qcom-wcn.c
-index b55b4317e..ac6b34e01 100644
---- a/drivers/power/sequencing/pwrseq-qcom-wcn.c
-+++ b/drivers/power/sequencing/pwrseq-qcom-wcn.c
-@@ -335,7 +335,7 @@ static const char *const pwrseq_wcn3990_vregs[] = {
- };
- 
- static int pwrseq_qcom_wcn3990_match(struct pwrseq_device *pwrseq,
--				     struct device *dev);
-+				     struct device *dev, int index);
- 
- static const struct pwrseq_qcom_wcn_pdata pwrseq_wcn3990_of_data = {
- 	.vregs = pwrseq_wcn3990_vregs,
-@@ -436,13 +436,13 @@ static int pwrseq_qcom_wcn_match_regulator(struct pwrseq_device *pwrseq,
- }
- 
- static int pwrseq_qcom_wcn_match(struct pwrseq_device *pwrseq,
--				 struct device *dev)
-+				 struct device *dev, int index)
- {
- 	return pwrseq_qcom_wcn_match_regulator(pwrseq, dev, "vddaon-supply");
- }
- 
- static int pwrseq_qcom_wcn3990_match(struct pwrseq_device *pwrseq,
--				     struct device *dev)
-+				     struct device *dev, int index)
- {
- 	int ret;
- 
-diff --git a/drivers/power/sequencing/pwrseq-thead-gpu.c b/drivers/power/sequencing/pwrseq-thead-gpu.c
-index a45318b4b..cb7a6ea66 100644
---- a/drivers/power/sequencing/pwrseq-thead-gpu.c
-+++ b/drivers/power/sequencing/pwrseq-thead-gpu.c
-@@ -115,7 +115,7 @@ static const struct pwrseq_target_data *pwrseq_thead_gpu_targets[] = {
- };
- 
- static int pwrseq_thead_gpu_match(struct pwrseq_device *pwrseq,
--				  struct device *dev)
-+				  struct device *dev, int index)
- {
- 	struct pwrseq_thead_gpu_ctx *ctx = pwrseq_device_get_drvdata(pwrseq);
- 	static const char *const clk_names[] = { "core", "sys" };
+diff --git a/drivers/usb/Kconfig b/drivers/usb/Kconfig
+index abf8c6cde..ef1959363 100644
+--- a/drivers/usb/Kconfig
++++ b/drivers/usb/Kconfig
+@@ -44,6 +44,7 @@ config USB_ARCH_HAS_HCD
+ config USB
+ 	tristate "Support for Host-side USB"
+ 	depends on USB_ARCH_HAS_HCD
++	depends on POWER_SEQUENCING if POWER_SEQUENCING
+ 	select GENERIC_ALLOCATOR
+ 	select USB_COMMON
+ 	select NLS  # for UTF-8 strings
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 24960ba9c..4165f71e2 100644
+index d92bf8877..1be6b0773 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -31,7 +31,9 @@
- #include <linux/minmax.h>
+@@ -10,6 +10,7 @@
+  * Released under the GPLv2 only.
+  */
+ 
++#include <linux/bitops.h>
+ #include <linux/kernel.h>
+ #include <linux/errno.h>
+ #include <linux/module.h>
+@@ -32,6 +33,7 @@
  #include <linux/mutex.h>
  #include <linux/random.h>
-+#include <linux/of_graph.h>
  #include <linux/pm_qos.h>
 +#include <linux/pwrseq/consumer.h>
  #include <linux/kobject.h>
  
  #include <linux/bitfield.h>
-@@ -888,13 +890,25 @@ int usb_hub_set_port_power(struct usb_device *hdev, struct usb_hub *hub,
+@@ -871,6 +873,16 @@ static void hub_tt_work(struct work_struct *work)
+ 	spin_unlock_irqrestore(&hub->tt.lock, flags);
+ }
+ 
++static int usb_hub_set_port_pwrseq(struct usb_port *port, bool on)
++{
++	if (!IS_ENABLED(CONFIG_POWER_SEQUENCING))
++		return 0;
++
++	if (on)
++		return pwrseq_power_on(port->pwrseq);
++	return pwrseq_power_off(port->pwrseq);
++}
++
+ /**
+  * usb_hub_set_port_power - control hub port's power state
+  * @hdev: USB device belonging to the usb hub
+@@ -886,20 +898,24 @@ static void hub_tt_work(struct work_struct *work)
+ int usb_hub_set_port_power(struct usb_device *hdev, struct usb_hub *hub,
+ 			   int port1, bool set)
  {
++	struct usb_port *pwrseq_port = hub->ports[port1 - 1];
  	int ret;
  
-+	if (set)
-+		ret = pwrseq_power_on(hub->ports[port1 - 1]->pwrseq);
-+	else
-+		ret = pwrseq_power_off(hub->ports[port1 - 1]->pwrseq);
++	ret = usb_hub_set_port_pwrseq(pwrseq_port, set);
 +	if (ret)
 +		return ret;
 +
@@ -1295,16 +597,33 @@ index 24960ba9c..4165f71e2 100644
  
 -	if (ret)
 +	if (ret) {
-+		if (set)
-+			pwrseq_power_off(hub->ports[port1 - 1]->pwrseq);
-+		else
-+			pwrseq_power_on(hub->ports[port1 - 1]->pwrseq);
++		usb_hub_set_port_pwrseq(pwrseq_port, !set);
  		return ret;
 +	}
  
- 	if (set)
- 		set_bit(port1, hub->power_bits);
-@@ -1867,6 +1881,7 @@ static int hub_probe(struct usb_interface *intf, const struct usb_device_id *id)
+-	if (set)
+-		set_bit(port1, hub->power_bits);
+-	else
+-		clear_bit(port1, hub->power_bits);
++	assign_bit(port1, hub->power_bits, set);
+ 	return 0;
+ }
+ 
+@@ -975,11 +991,8 @@ static void hub_power_on(struct usb_hub *hub, bool do_delay)
+ 		dev_dbg(hub->intfdev, "trying to enable port power on "
+ 				"non-switchable hub\n");
+ 	for (port1 = 1; port1 <= hub->hdev->maxchild; port1++)
+-		if (test_bit(port1, hub->power_bits))
+-			set_port_feature(hub->hdev, port1, USB_PORT_FEAT_POWER);
+-		else
+-			usb_clear_port_feature(hub->hdev, port1,
+-						USB_PORT_FEAT_POWER);
++		usb_hub_set_port_power(hub->hdev, hub, port1,
++				       test_bit(port1, hub->power_bits));
+ 	if (do_delay)
+ 		msleep(hub_power_on_good_delay(hub));
+ }
+@@ -1867,6 +1880,7 @@ static int hub_probe(struct usb_interface *intf, const struct usb_device_id *id)
  	struct usb_host_interface *desc;
  	struct usb_device *hdev;
  	struct usb_hub *hub;
@@ -1312,64 +631,229 @@ index 24960ba9c..4165f71e2 100644
  
  	desc = intf->cur_altsetting;
  	hdev = interface_to_usbdev(intf);
-@@ -1998,14 +2013,15 @@ static int hub_probe(struct usb_interface *intf, const struct usb_device_id *id)
+@@ -1998,14 +2012,15 @@ static int hub_probe(struct usb_interface *intf, const struct usb_device_id *id)
  		usb_set_interface(hdev, 0, 0);
  	}
  
 -	if (hub_configure(hub, &desc->endpoint[0].desc) >= 0) {
+-		onboard_dev_create_pdevs(hdev, &hub->onboard_devs);
+-
+-		return 0;
 +	ret = hub_configure(hub, &desc->endpoint[0].desc);
-+	if (ret >= 0) {
- 		onboard_dev_create_pdevs(hdev, &hub->onboard_devs);
- 
- 		return 0;
++	if (ret < 0) {
++		hub_disconnect(intf);
++		return ret;
  	}
  
- 	hub_disconnect(intf);
+-	hub_disconnect(intf);
 -	return -ENODEV;
-+	return ret;
++	onboard_dev_create_pdevs(hdev, &hub->onboard_devs);
++
++	return 0;
  }
  
  static int
+@@ -3238,22 +3253,6 @@ static bool hub_port_stop_enumerate(struct usb_hub *hub, int port1, int retries)
+ 	return port_dev->ignore_event;
+ }
+ 
+-/* Check if a port is power on */
+-int usb_port_is_power_on(struct usb_hub *hub, unsigned int portstatus)
+-{
+-	int ret = 0;
+-
+-	if (hub_is_superspeed(hub->hdev)) {
+-		if (portstatus & USB_SS_PORT_STAT_POWER)
+-			ret = 1;
+-	} else {
+-		if (portstatus & USB_PORT_STAT_POWER)
+-			ret = 1;
+-	}
+-
+-	return ret;
+-}
+-
+ static void usb_lock_port(struct usb_port *port_dev)
+ 		__acquires(&port_dev->status_lock)
+ {
+@@ -3305,7 +3304,7 @@ static int check_port_resume_type(struct usb_device *udev,
+ 	}
+ 	/* Is the device still present? */
+ 	else if (status || port_is_suspended(hub, portstatus) ||
+-			!usb_port_is_power_on(hub, portstatus)) {
++			!usb_port_is_power_on(port_dev, portstatus)) {
+ 		if (status >= 0)
+ 			status = -ENODEV;
+ 	} else if (!(portstatus & USB_PORT_STAT_CONNECTION)) {
+@@ -3747,12 +3746,13 @@ static int wait_for_connected(struct usb_device *udev,
+ 		struct usb_hub *hub, int port1,
+ 		u16 *portchange, u16 *portstatus)
+ {
++	struct usb_port *port_dev = hub->ports[port1 - 1];
+ 	int status = 0, delay_ms = 0;
+ 
+ 	while (delay_ms < 2000) {
+ 		if (status || *portstatus & USB_PORT_STAT_CONNECTION)
+ 			break;
+-		if (!usb_port_is_power_on(hub, *portstatus)) {
++		if (!usb_port_is_power_on(port_dev, *portstatus)) {
+ 			status = -ENODEV;
+ 			break;
+ 		}
+@@ -5448,9 +5448,9 @@ static void hub_port_connect(struct usb_hub *hub, int port1, u16 portstatus,
+ 		 * but only if the port isn't owned by someone else.
+ 		 */
+ 		if (hub_is_port_power_switchable(hub)
+-				&& !usb_port_is_power_on(hub, portstatus)
++				&& !usb_port_is_power_on(port_dev, portstatus)
+ 				&& !port_dev->port_owner)
+-			set_port_feature(hdev, port1, USB_PORT_FEAT_POWER);
++			usb_hub_set_port_power(hdev, hub, port1, true);
+ 
+ 		if (portstatus & USB_PORT_STAT_ENABLE)
+ 			goto done;
 diff --git a/drivers/usb/core/hub.h b/drivers/usb/core/hub.h
-index 9ebc5ef54..6039e5f5d 100644
+index 9ebc5ef54..3f403a56e 100644
 --- a/drivers/usb/core/hub.h
 +++ b/drivers/usb/core/hub.h
-@@ -85,6 +85,7 @@ struct usb_hub {
-  * @port_owner: port's owner
-  * @peer: related usb2 and usb3 ports (share the same connector)
-  * @connector: USB Type-C connector
-+ * @pwrseq: power sequencing descriptor for the port
-  * @req: default pm qos request for hubs without port power control
-  * @connect_type: port's connect type
-  * @state: device state of the usb device attached to the port
-@@ -104,6 +105,7 @@ struct usb_port {
- 	struct usb_dev_state *port_owner;
- 	struct usb_port *peer;
- 	struct typec_connector *connector;
-+	struct pwrseq_desc *pwrseq;
- 	struct dev_pm_qos_request *req;
- 	enum usb_port_connect_type connect_type;
- 	enum usb_device_state state;
+@@ -15,7 +15,9 @@
+ #include <linux/usb/ch11.h>
+ #include <linux/usb/hcd.h>
+ #include <linux/usb/typec.h>
++
+ #include "usb.h"
++#include "port.h"
+ 
+ struct usb_hub {
+ 	struct device		*intfdev;	/* the "interface" device */
+@@ -78,51 +80,6 @@ struct usb_hub {
+ 	struct list_head        onboard_devs;
+ };
+ 
+-/**
+- * struct usb port - kernel's representation of a usb port
+- * @child: usb device attached to the port
+- * @dev: generic device interface
+- * @port_owner: port's owner
+- * @peer: related usb2 and usb3 ports (share the same connector)
+- * @connector: USB Type-C connector
+- * @req: default pm qos request for hubs without port power control
+- * @connect_type: port's connect type
+- * @state: device state of the usb device attached to the port
+- * @state_kn: kernfs_node of the sysfs attribute that accesses @state
+- * @location: opaque representation of platform connector location
+- * @status_lock: synchronize port_event() vs usb_port_{suspend|resume}
+- * @portnum: port index num based one
+- * @is_superspeed cache super-speed status
+- * @usb3_lpm_u1_permit: whether USB3 U1 LPM is permitted.
+- * @usb3_lpm_u2_permit: whether USB3 U2 LPM is permitted.
+- * @early_stop: whether port initialization will be stopped earlier.
+- * @ignore_event: whether events of the port are ignored.
+- */
+-struct usb_port {
+-	struct usb_device *child;
+-	struct device dev;
+-	struct usb_dev_state *port_owner;
+-	struct usb_port *peer;
+-	struct typec_connector *connector;
+-	struct dev_pm_qos_request *req;
+-	enum usb_port_connect_type connect_type;
+-	enum usb_device_state state;
+-	struct kernfs_node *state_kn;
+-	usb_port_location_t location;
+-	struct mutex status_lock;
+-	u32 over_current_count;
+-	u8 portnum;
+-	u32 quirks;
+-	unsigned int early_stop:1;
+-	unsigned int ignore_event:1;
+-	unsigned int is_superspeed:1;
+-	unsigned int usb3_lpm_u1_permit:1;
+-	unsigned int usb3_lpm_u2_permit:1;
+-};
+-
+-#define to_usb_port(_dev) \
+-	container_of(_dev, struct usb_port, dev)
+-
+ extern int usb_hub_create_port_device(struct usb_hub *hub,
+ 		int port1);
+ extern void usb_hub_remove_port_device(struct usb_hub *hub,
+@@ -138,7 +95,6 @@ extern int usb_clear_port_feature(struct usb_device *hdev,
+ 		int port1, int feature);
+ extern int usb_hub_port_status(struct usb_hub *hub, int port1,
+ 		u16 *status, u16 *change);
+-extern int usb_port_is_power_on(struct usb_hub *hub, unsigned int portstatus);
+ 
+ static inline bool hub_is_port_power_switchable(struct usb_hub *hub)
+ {
+@@ -147,7 +103,15 @@ static inline bool hub_is_port_power_switchable(struct usb_hub *hub)
+ 	if (!hub)
+ 		return false;
+ 	hcs = hub->descriptor->wHubCharacteristics;
+-	return (le16_to_cpu(hcs) & HUB_CHAR_LPSM) < HUB_CHAR_NO_LPSM;
++	if ((le16_to_cpu(hcs) & HUB_CHAR_LPSM) < HUB_CHAR_NO_LPSM)
++		return true;
++	/* check for controllable external power sequencers */
++	for (unsigned int i = 0; i < hub->hdev->maxchild; i++) {
++		if (hub->ports[i] && hub->ports[i]->pwrseq)
++			return true;
++	}
++
++	return false;
+ }
+ 
+ static inline int hub_is_superspeed(struct usb_device *hdev)
 diff --git a/drivers/usb/core/port.c b/drivers/usb/core/port.c
-index b1364f0c3..2d09037fe 100644
+index b4452b665..c0490f616 100644
 --- a/drivers/usb/core/port.c
 +++ b/drivers/usb/core/port.c
-@@ -7,11 +7,14 @@
+@@ -7,11 +7,15 @@
   * Author: Lan Tianyu <tianyu.lan@intel.com>
   */
  
++#include <linux/acpi.h>
 +#include <linux/cleanup.h>
  #include <linux/kstrtox.h>
  #include <linux/slab.h>
  #include <linux/string_choices.h>
  #include <linux/sysfs.h>
-+#include <linux/of_graph.h>
  #include <linux/pm_qos.h>
++#include <linux/property.h>
 +#include <linux/pwrseq/consumer.h>
  #include <linux/component.h>
  #include <linux/usb/of.h>
  
-@@ -28,6 +31,9 @@ static bool usb_port_allow_power_off(struct usb_device *hdev,
+@@ -21,6 +25,29 @@ static int usb_port_block_power_off;
+ 
+ static const struct attribute_group *port_dev_group[];
+ 
++/* Check if a port is power on */
++int usb_port_is_power_on(struct usb_port *port, unsigned int portstatus)
++{
++	int ret = 0;
++	int pwrseq_state;
++
++	if (port->is_superspeed) {
++		if (portstatus & USB_SS_PORT_STAT_POWER)
++			ret = 1;
++	} else {
++		if (portstatus & USB_PORT_STAT_POWER)
++			ret = 1;
++	}
++
++	/* stub function returns error */
++	pwrseq_state = pwrseq_get_state(port->pwrseq);
++	/* fall back to port status if pwrseq is in unknown state */
++	if (pwrseq_state < 0 || pwrseq_state == PWRSEQ_STATE_UNKNOWN)
++		return ret;
++
++	return ret && pwrseq_state == PWRSEQ_STATE_ON;
++}
++
+ static bool usb_port_allow_power_off(struct usb_device *hdev,
+ 				     struct usb_hub *hub,
+ 				     struct usb_port *port_dev)
+@@ -28,6 +55,9 @@ static bool usb_port_allow_power_off(struct usb_device *hdev,
  	if (hub_is_port_power_switchable(hub))
  		return true;
  
@@ -1379,122 +863,252 @@ index b1364f0c3..2d09037fe 100644
  	if (!IS_ENABLED(CONFIG_ACPI))
  		return false;
  
-@@ -748,6 +754,32 @@ static const struct component_ops connector_ops = {
+@@ -97,7 +127,7 @@ static ssize_t disable_show(struct device *dev,
+ 	}
+ 
+ 	usb_hub_port_status(hub, port1, &portstatus, &unused);
+-	disabled = !usb_port_is_power_on(hub, portstatus);
++	disabled = !usb_port_is_power_on(port_dev, portstatus);
+ 
+  out_hdev_lock:
+ 	usb_unlock_device(hdev);
+@@ -358,6 +388,13 @@ static void usb_port_device_release(struct device *dev)
+ {
+ 	struct usb_port *port_dev = to_usb_port(dev);
+ 
++	/*
++	 * At this point ACPI nodes and swnodes have been removed by
++	 * device_platform_notify_remove() in device_del().
++	 */
++	fwnode_handle_put(dev_fwnode(dev));
++	/* usb_hub_create_port_device() could leave an error value */
++	pwrseq_put(port_dev->pwrseq);
+ 	kfree(port_dev->req);
+ 	kfree(port_dev);
+ }
+@@ -750,10 +787,46 @@ static const struct component_ops connector_ops = {
  	.unbind = connector_unbind,
  };
  
-+static struct pwrseq_desc *usb_hub_port_pwrseq_get(struct usb_device *hub, int port1)
++static bool port_pwrseq_is_supported(struct usb_port *port_dev)
 +{
-+	struct device_node *node = dev_of_node(&hub->dev);
-+	struct device_node *np __free(device_node) = NULL;
++	struct device *dev = &port_dev->dev;
++	struct fwnode_handle *port = dev_fwnode(dev);
 +
-+	if (!IS_ENABLED(CONFIG_OF))
-+		return NULL;
++	struct fwnode_handle *ep __free(fwnode_handle) =
++			fwnode_graph_get_next_port_endpoint(port, NULL);
++	if (!ep)
++		return false;
 +
++	struct fwnode_handle *remote __free(fwnode_handle) =
++			fwnode_graph_get_remote_port_parent(ep);
++	if (!remote)
++		return false;
++
++	if (!fwnode_device_is_compatible(remote, "pcie-m2-e-connector")) {
++		dev_dbg(dev, "remote endpoint %pfw is not a supported connector", remote);
++		return false;
++	}
++
++	return true;
++}
++
++static struct pwrseq_desc *usb_hub_port_pwrseq_get(struct usb_port *port_dev)
++{
 +	if (!IS_ENABLED(CONFIG_POWER_SEQUENCING))
 +		return NULL;
 +
-+	if (!of_graph_is_present(node))
++	if (!port_pwrseq_is_supported(port_dev))
 +		return NULL;
 +
-+	np = of_graph_get_remote_node(node, port1, -1);
-+	if (!np)
-+		return NULL;
-+
-+	if (!of_device_is_compatible(np, "pcie-m2-e-connector")) {
-+		dev_dbg(&hub->dev, "remote endpoint %pOF not m2 connector", np);
-+		return NULL;
-+	}
-+
-+	return pwrseq_get_index(&hub->dev, "usb", port1);
++	return pwrseq_get(&port_dev->dev, "usb");
 +}
 +
  int usb_hub_create_port_device(struct usb_hub *hub, int port1)
  {
  	struct usb_port *port_dev;
-@@ -801,10 +833,24 @@ int usb_hub_create_port_device(struct usb_hub *hub, int port1)
+ 	struct usb_device *hdev = hub->hdev;
++	struct fwnode_handle *fwnode = dev_fwnode(&hdev->dev);
++	struct pwrseq_desc *pwrseq;
+ 	int retval;
+ 
+ 	port_dev = kzalloc_obj(*port_dev);
+@@ -782,10 +855,29 @@ int usb_hub_create_port_device(struct usb_hub *hub, int port1)
+ 	port_dev->dev.driver = &usb_port_driver;
+ 	dev_set_name(&port_dev->dev, "%s-port%d", dev_name(&hub->hdev->dev),
+ 			port1);
++
++	/*
++	 * ACPI FW nodes are associated later when device_register() happens.
++	 * Skip assigning one here to avoid potential conflicts.
++	 */
++	if (!is_acpi_node(fwnode)) {
++		struct fwnode_handle *port;
++
++		/*
++		 * fwnode_graph_get_port_by_id() returns either a valid fwnode handle
++		 * or NULL. Passing NULL to device_set_node() clears any associated
++		 * fwnode. It is effectively a no-op here, since no fwnode has been
++		 * assigned to the newly created device yet.
++		 */
++		port = fwnode_graph_get_port_by_id(fwnode, port1, FWNODE_GRAPH_DEVICE_DISABLED);
++		device_set_node(&port_dev->dev, port);
++	}
++
+ 	mutex_init(&port_dev->status_lock);
+ 	retval = device_register(&port_dev->dev);
+ 	if (retval) {
+ 		put_device(&port_dev->dev);
++		hub->ports[port1 - 1] = NULL;
+ 		return retval;
+ 	}
+ 
+@@ -803,6 +895,14 @@ int usb_hub_create_port_device(struct usb_hub *hub, int port1)
  		goto err_put_kn;
  	}
  
-+	port_dev->pwrseq = usb_hub_port_pwrseq_get(hdev, port1);
-+	if (IS_ERR(port_dev->pwrseq)) {
-+		retval = PTR_ERR(port_dev->pwrseq);
-+		dev_err_probe(&port_dev->dev, retval,
-+			      "failed to get power sequencing descriptor\n");
++	pwrseq = usb_hub_port_pwrseq_get(port_dev);
++	if (IS_ERR(pwrseq)) {
++		retval = dev_err_probe(&port_dev->dev, PTR_ERR(pwrseq),
++				       "failed to get power sequencing descriptor\n");
 +		goto err_put_kn;
 +	}
-+
-+	retval = pwrseq_power_on(port_dev->pwrseq);
-+	if (retval) {
-+		dev_err_probe(&port_dev->dev, retval, "failed to enable power\n");
-+		goto err_put_pwrseq;
-+	}
++	port_dev->pwrseq = pwrseq;
 +
  	retval = component_add(&port_dev->dev, &connector_ops);
  	if (retval) {
  		dev_warn(&port_dev->dev, "failed to add component\n");
--		goto err_put_kn;
-+		goto err_pwrseq_off;
- 	}
- 
- 	find_and_link_peer(hub, port1);
-@@ -842,6 +888,10 @@ int usb_hub_create_port_device(struct usb_hub *hub, int port1)
- 	}
- 	return 0;
- 
-+err_pwrseq_off:
-+	pwrseq_power_off(port_dev->pwrseq);
-+err_put_pwrseq:
-+	pwrseq_put(port_dev->pwrseq);
- err_put_kn:
- 	sysfs_put(port_dev->state_kn);
- err_unregister:
-@@ -858,6 +908,8 @@ void usb_hub_remove_port_device(struct usb_hub *hub, int port1)
+@@ -860,6 +960,7 @@ void usb_hub_remove_port_device(struct usb_hub *hub, int port1)
  	peer = port_dev->peer;
  	if (peer)
  		unlink_peers(port_dev, peer);
 +	pwrseq_power_off(port_dev->pwrseq);
-+	pwrseq_put(port_dev->pwrseq);
  	component_del(&port_dev->dev, &connector_ops);
  	sysfs_put(port_dev->state_kn);
  	device_unregister(&port_dev->dev);
+diff --git a/drivers/usb/core/port.h b/drivers/usb/core/port.h
+new file mode 100644
+index 000000000..088a18233
+--- /dev/null
++++ b/drivers/usb/core/port.h
+@@ -0,0 +1,68 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * usb hub driver head file
++ *
++ * Copyright (C) 1999 Linus Torvalds
++ * Copyright (C) 1999 Johannes Erdfelt
++ * Copyright (C) 1999 Gregory P. Smith
++ * Copyright (C) 2001 Brad Hards (bhards@bigpond.net.au)
++ * Copyright (C) 2012 Intel Corp (tianyu.lan@intel.com)
++ *
++ *  move struct usb_port to this file.
++ */
++
++#include <linux/container_of.h>
++#include <linux/device.h>
++#include <linux/mutex_types.h>
++#include <linux/usb.h>
++
++#include <uapi/linux/usb/ch9.h>
++
++/**
++ * struct usb port - kernel's representation of a usb port
++ * @child: usb device attached to the port
++ * @dev: generic device interface
++ * @port_owner: port's owner
++ * @peer: related usb2 and usb3 ports (share the same connector)
++ * @connector: USB Type-C connector
++ * @pwrseq: power sequencing descriptor for the port
++ * @req: default pm qos request for hubs without port power control
++ * @connect_type: port's connect type
++ * @state: device state of the usb device attached to the port
++ * @state_kn: kernfs_node of the sysfs attribute that accesses @state
++ * @location: opaque representation of platform connector location
++ * @status_lock: synchronize port_event() vs usb_port_{suspend|resume}
++ * @portnum: port index num based one
++ * @is_superspeed cache super-speed status
++ * @usb3_lpm_u1_permit: whether USB3 U1 LPM is permitted.
++ * @usb3_lpm_u2_permit: whether USB3 U2 LPM is permitted.
++ * @early_stop: whether port initialization will be stopped earlier.
++ * @ignore_event: whether events of the port are ignored.
++ */
++struct usb_port {
++	struct usb_device *child;
++	struct device dev;
++	struct usb_dev_state *port_owner;
++	struct usb_port *peer;
++	struct typec_connector *connector;
++	struct pwrseq_desc *pwrseq;
++	struct dev_pm_qos_request *req;
++	enum usb_port_connect_type connect_type;
++	enum usb_device_state state;
++	struct kernfs_node *state_kn;
++	usb_port_location_t location;
++	struct mutex status_lock;
++	u32 over_current_count;
++	u8 portnum;
++	u32 quirks;
++	unsigned int early_stop:1;
++	unsigned int ignore_event:1;
++	unsigned int is_superspeed:1;
++	unsigned int usb3_lpm_u1_permit:1;
++	unsigned int usb3_lpm_u2_permit:1;
++};
++
++#define to_usb_port(_dev) \
++	container_of(_dev, struct usb_port, dev)
++
++int usb_port_is_power_on(struct usb_port *port, unsigned int portstatus);
+diff --git a/include/linux/property.h b/include/linux/property.h
+index 14c304db4..9a784a856 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -505,6 +505,10 @@ int fwnode_get_phy_mode(const struct fwnode_handle *fwnode);
+ 
+ void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index);
+ 
++struct fwnode_handle *fwnode_graph_get_port_by_id(struct fwnode_handle *fwnode, u32 id,
++						  unsigned long flags);
++struct fwnode_handle *fwnode_graph_get_next_port_endpoint(
++	const struct fwnode_handle *port, struct fwnode_handle *prev);
+ struct fwnode_handle *fwnode_graph_get_next_endpoint(
+ 	const struct fwnode_handle *fwnode, struct fwnode_handle *prev);
+ struct fwnode_handle *
 diff --git a/include/linux/pwrseq/consumer.h b/include/linux/pwrseq/consumer.h
-index 7d583b4f2..d5d57cdb0 100644
+index 3c907c9e1..af949e756 100644
 --- a/include/linux/pwrseq/consumer.h
 +++ b/include/linux/pwrseq/consumer.h
-@@ -11,10 +11,12 @@
+@@ -11,6 +11,12 @@
  struct device;
  struct pwrseq_desc;
  
-+#define pwrseq_get(dev, target) pwrseq_get_index(dev, target, -1)
++enum {
++	PWRSEQ_STATE_UNKNOWN,
++	PWRSEQ_STATE_ON,
++	PWRSEQ_STATE_OFF,
++};
 +
  #if IS_ENABLED(CONFIG_POWER_SEQUENCING)
  
  struct pwrseq_desc * __must_check
--pwrseq_get(struct device *dev, const char *target);
-+pwrseq_get_index(struct device *dev, const char *target, int index);
- void pwrseq_put(struct pwrseq_desc *desc);
+@@ -22,6 +28,7 @@ devm_pwrseq_get(struct device *dev, const char *target);
  
- struct pwrseq_desc * __must_check
-@@ -26,7 +28,7 @@ int pwrseq_power_off(struct pwrseq_desc *desc);
- #else /* CONFIG_POWER_SEQUENCING */
+ int pwrseq_power_on(struct pwrseq_desc *desc);
+ int pwrseq_power_off(struct pwrseq_desc *desc);
++int pwrseq_get_state(struct pwrseq_desc *desc);
  
- static inline struct pwrseq_desc * __must_check
--pwrseq_get(struct device *dev, const char *target)
-+pwrseq_get_index(struct device *dev, const char *target, int index)
- {
- 	return ERR_PTR(-ENOSYS);
+ struct device *pwrseq_to_device(struct pwrseq_desc *desc);
+ 
+@@ -53,6 +60,11 @@ static inline int pwrseq_power_off(struct pwrseq_desc *desc)
+ 	return -ENOSYS;
  }
-diff --git a/include/linux/pwrseq/provider.h b/include/linux/pwrseq/provider.h
-index 33b3d2c2e..a2ec6c612 100644
---- a/include/linux/pwrseq/provider.h
-+++ b/include/linux/pwrseq/provider.h
-@@ -11,7 +11,7 @@ struct module;
- struct pwrseq_device;
  
- typedef int (*pwrseq_power_state_func)(struct pwrseq_device *);
--typedef int (*pwrseq_match_func)(struct pwrseq_device *, struct device *);
-+typedef int (*pwrseq_match_func)(struct pwrseq_device *, struct device *, int);
- 
- #define PWRSEQ_NO_MATCH 0
- #define PWRSEQ_MATCH_OK 1
++static inline int pwrseq_get_state(struct pwrseq_desc *desc)
++{
++	return -ENOSYS;
++}
++
+ static inline struct device *pwrseq_to_device(struct pwrseq_desc *desc)
+ {
+ 	return NULL;

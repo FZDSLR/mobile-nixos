@@ -7,12 +7,12 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "7.1.8";
+  version = "7.2";
   configfile = ./config.aarch64;
 
   src = fetchurl {
-    url = "mirror://kernel/linux/kernel/v7.x/linux-7.1.8.tar.xz";
-    hash = "sha256-/wHctEknnVtM/M2wH+5jnPX/GAPxdJp3hE3TORVCLEk=";
+    url = "mirror://kernel/linux/kernel/v7.x/linux-7.2.tar.xz";
+    hash = "sha256-+f7z0UwN9TgZAm9L50RZg1wqCw3L9bW72eoZ8IKUArM=";
   };
 
   patches = [
@@ -30,6 +30,11 @@ mobile-nixos.kernel-builder {
     (fetchurl {
       url = "https://lore.kernel.org/all/20260809012309.43657-1-lucid_duck@justthetip.ca/raw";
       hash = "sha256-cpIh+ZJOldp7sMRgpdLz5ou2UbexNLAfAdBNIB1Pbto=";
+    })
+    # [PATCH wireless] wifi: mt76: mt7921: fix array-index-out-of-bounds in mt7921_load_clc()
+    (fetchurl {
+      url = "https://lore.kernel.org/all/20260815103312.34080-1-mikhail.v.gavrilov@gmail.com/raw";
+      hash = "sha256-BeqFpNaGZhwp4bxLEicFqW4dh0TA1iaO5P/7UKNJwrE=";
     })
     ./pcie_wifi_bt.diff
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
