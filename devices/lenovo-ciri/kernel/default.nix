@@ -36,6 +36,11 @@ mobile-nixos.kernel-builder {
       url = "https://lore.kernel.org/all/20260815103312.34080-1-mikhail.v.gavrilov@gmail.com/raw";
       hash = "sha256-BeqFpNaGZhwp4bxLEicFqW4dh0TA1iaO5P/7UKNJwrE=";
     })
+    # [PATCH] arm64: dts: mediatek: mt8188-geralt: Enlarge SCP core0 memory region
+    (fetchurl {
+      url = "https://lore.kernel.org/all/20260824090409.203230-1-justin.yeh@mediatek.com/raw";
+      hash = "sha256-Q10FwG/IX5Gn4GS47EmvIwRUW/V3awmnsCmQMoYlfCI=";
+    })
     ./pcie_wifi_bt.diff
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
     ./0001-HID-hid-himax-master-controller.patch
