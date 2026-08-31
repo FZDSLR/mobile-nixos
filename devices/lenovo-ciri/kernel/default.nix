@@ -7,12 +7,12 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "7.2.0";
+  version = "7.2.2";
   configfile = ./config.aarch64;
 
   src = fetchurl {
-    url = "mirror://kernel/linux/kernel/v7.x/linux-7.2.tar.xz";
-    hash = "sha256-+f7z0UwN9TgZAm9L50RZg1wqCw3L9bW72eoZ8IKUArM=";
+    url = "mirror://kernel/linux/kernel/v7.x/linux-7.2.2.tar.xz";
+    hash = "sha256-fQ584U+YxD7+iAz/vzVKWb5Fko/fcXDXMzw3SukcDYM=";
   };
 
   patches = [
