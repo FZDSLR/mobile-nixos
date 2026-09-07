@@ -40,7 +40,7 @@ mobile-nixos.kernel-builder {
     # [PATCH v3] arm64: dts: mediatek: Add #{address,size}-cells to Chromium-based /firmware
     (fetchurl {
       url = "https://lore.kernel.org/all/20260904163143.v3.1.I33d1d66d4724587a981f706243cdc2f264670a40@changeid/raw";
-      hash = "sha256-0rwhhsa504r9aznqsxvxh9374mx0gfvvgswla6aadrw41yj23r0d";
+      hash = "sha256-DeQhpA+E56aUUZTrt7d7oFdyRoJ9d43tVykTUJSGkGc=";
     })
     ./pcie_wifi_bt.diff
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
