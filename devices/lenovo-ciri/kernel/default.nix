@@ -7,7 +7,7 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "7.3-rc2";
+  version = "7.3.0-rc2";
   configfile = ./config.aarch64;
 
   src = fetchgit {
