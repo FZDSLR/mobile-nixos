@@ -7,12 +7,13 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "7.2.2";
+  version = "7.3-rc2";
   configfile = ./config.aarch64;
 
-  src = fetchurl {
-    url = "mirror://kernel/linux/kernel/v7.x/linux-7.2.2.tar.xz";
-    hash = "sha256-fQ584U+YxD7+iAz/vzVKWb5Fko/fcXDXMzw3SukcDYM=";
+  src = fetchgit {
+    url = "https://mirrors.bfsu.edu.cn/git/linux.git";
+    rev = "df2908090cda368b01ff43709f51890076c56157";
+    hash = "sha256-y/K7PDeY36Rq9T1dJ/FUjvWQ54rm6ZZYZM2/NxK7Wvs=";
   };
 
   patches = [
@@ -31,15 +32,15 @@ mobile-nixos.kernel-builder {
       url = "https://lore.kernel.org/all/20260809012309.43657-1-lucid_duck@justthetip.ca/raw";
       hash = "sha256-cpIh+ZJOldp7sMRgpdLz5ou2UbexNLAfAdBNIB1Pbto=";
     })
-    # [PATCH wireless] wifi: mt76: mt7921: fix array-index-out-of-bounds in mt7921_load_clc()
-    (fetchurl {
-      url = "https://lore.kernel.org/all/20260815103312.34080-1-mikhail.v.gavrilov@gmail.com/raw";
-      hash = "sha256-BeqFpNaGZhwp4bxLEicFqW4dh0TA1iaO5P/7UKNJwrE=";
-    })
     # [PATCH] arm64: dts: mediatek: mt8188-geralt: Enlarge SCP core0 memory region
     (fetchurl {
       url = "https://lore.kernel.org/all/20260824090409.203230-1-justin.yeh@mediatek.com/raw";
       hash = "sha256-Q10FwG/IX5Gn4GS47EmvIwRUW/V3awmnsCmQMoYlfCI=";
+    })
+    # [PATCH v3] arm64: dts: mediatek: Add #{address,size}-cells to Chromium-based /firmware
+    (fetchurl {
+      url = "https://lore.kernel.org/all/20260904163143.v3.1.I33d1d66d4724587a981f706243cdc2f264670a40@changeid/raw";
+      hash = "sha256-0rwhhsa504r9aznqsxvxh9374mx0gfvvgswla6aadrw41yj23r0d";
     })
     ./pcie_wifi_bt.diff
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
