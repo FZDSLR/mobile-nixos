@@ -7,13 +7,13 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "7.3.0-rc2";
+  version = "7.3.0-rc3";
   configfile = ./config.aarch64;
 
   src = fetchgit {
     url = "https://mirrors.bfsu.edu.cn/git/linux.git";
-    rev = "df2908090cda368b01ff43709f51890076c56157";
-    hash = "sha256-y/K7PDeY36Rq9T1dJ/FUjvWQ54rm6ZZYZM2/NxK7Wvs=";
+    rev = "238650ef6c7c7cca08e032527329424c9fbd70e5";
+    hash = "sha256-h/9Pk2qf38dNW3F01sW1P5cGkikdPZZRvwhw2z68lGE=";
   };
 
   patches = [
