@@ -1,0 +1,12 @@
+diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
+index f382f90c4..a1d13fe50 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
+@@ -441,6 +441,7 @@ dptx_out: endpoint {
+ &gpu {
+ 	mali-supply = <&mt6359_vproc2_buck_reg>;
+ 	status = "okay";
++	dma-coherent;
+ };
+ 
+ &i2c0 {
