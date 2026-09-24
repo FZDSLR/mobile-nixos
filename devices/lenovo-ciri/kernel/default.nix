@@ -36,7 +36,8 @@ mobile-nixos.kernel-builder {
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
     ./0001-HID-hid-himax-master-controller.patch
     ./0001-dts-mediatek-enable-ciri-touch-support.patch
-    ./g57-disable-flush-reduction.patch
+    # ./g57-disable-flush-reduction.patch
+    ./mt7921-tx-free-bounds-check.patch
   ];
   nativeBuildInputs = [ python3 ];
   isModular = true;
