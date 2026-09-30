@@ -32,6 +32,7 @@ mobile-nixos.kernel-builder {
       url = "https://lore.kernel.org/all/20260904163143.v3.1.I33d1d66d4724587a981f706243cdc2f264670a40@changeid/raw";
       hash = "sha256-DeQhpA+E56aUUZTrt7d7oFdyRoJ9d43tVykTUJSGkGc=";
     })
+    ./61d7026a950510f48b2a4a8fcdfd84ce38b85523.patch
     ./pcie_wifi_bt.diff
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
     ./0001-HID-hid-himax-master-controller.patch

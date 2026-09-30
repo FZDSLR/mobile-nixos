@@ -1,0 +1,41 @@
+From 61d7026a950510f48b2a4a8fcdfd84ce38b85523 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20Kope=C4=87?= <michal@nozomi.space>
+Date: Tue, 29 Sep 2026 23:40:22 +0200
+Subject: [PATCH] arm64: dts: mediatek: mt8188-geralt: Reserve SCP dual-core
+ memory region
+
+The trusted firmware on MT8188 protects 0x70000000-0x79ffffff (the SCP
+core1 DRAM region) in the EMI MPU. Only the application processor and
+the SCP may access it; accesses from other bus masters, including the
+GPU, are silently dropped on write and return zeros on read.
+
+The region is not reserved in the device tree, so Linux hands it out as
+ordinary memory. Under memory pressure, GPU buffers and GPU page tables
+end up there, which causes silent loss of GPU writes, translation
+faults on page-table entries that are valid from the CPU's point of
+view, and the GPU resets that follow.
+
+Reserve the region the same way the ChromeOS device tree does.
+
+Fixes: 5e6af7f54189 ("arm64: dts: mediatek: Introduce MT8188 Geralt platform based Ciri")
+---
+ arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
+index 1a9bbb391bb3f2..e7564be4634de8 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8188-geralt.dtsi
+@@ -201,6 +201,12 @@
+ 			reg = <0 0x61000000 0 0x100000>;
+ 			no-map;
+ 		};
++
++		scp_dual_mem: memory@70000000 {
++			compatible = "shared-dma-pool";
++			reg = <0 0x70000000 0 0xa000000>;
++			no-map;
++		};
+ 	};
+ 
+ 	wifi-bt-connector {
