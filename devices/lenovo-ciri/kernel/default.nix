@@ -33,6 +33,7 @@ mobile-nixos.kernel-builder {
       hash = "sha256-DeQhpA+E56aUUZTrt7d7oFdyRoJ9d43tVykTUJSGkGc=";
     })
     ./61d7026a950510f48b2a4a8fcdfd84ce38b85523.patch
+    ./6cd6c4fb04d418fad4023bb69f023503ac239ba4.patch
     ./pcie_wifi_bt.diff
     ./0001-HID-Add-hid-himax-from-chromiumos-third_party-kernel.patch
     ./0001-HID-hid-himax-master-controller.patch

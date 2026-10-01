@@ -1,0 +1,52 @@
+From 6cd6c4fb04d418fad4023bb69f023503ac239ba4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Micha=C5=82=20Kope=C4=87?= <michal@nozomi.space>
+Date: Tue, 29 Sep 2026 16:13:55 +0200
+Subject: [PATCH] media: mediatek: vcodec: Use the extended H.264 VSI on MT8188
+
+The MT8188 SCP firmware (v2.0.27748) exchanges H.264 decode information
+through the extended VSI layout, but does not set MTK_VDEC_IS_SUPPORT_EXT
+in its decoder capabilities (0x41f20). The driver therefore fills in the
+original layout, and the firmware reads the error map address at offset 0
+as the bitstream address. Every H.264 decode then fails:
+
+  mtk-iommu 14018000.iommu: fault type=0x280 iova=0x1fb7fd000 pa=0x0 master=0x21000800(larb=23 port=0) layer=1 read
+  mtk-vcodec-dec 18000000.video-decoder: [MTK_VCODEC][ERROR][9]: lat decode timeout: pic_0
+
+Use the extended layout on MT8188 regardless of the capability bit.
+
+Also move the reserved field of struct vdec_h264_slice_info_ext to the
+end, matching the layout the firmware expects (as in the ChromeOS
+kernel), so that h264_slice_params follows at offset 704.
+---
+ .../vcodec/decoder/vdec/vdec_h264_req_multi_if.c         | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_h264_req_multi_if.c b/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_h264_req_multi_if.c
+index 10359ce9b934ee..75f8d60cedf0db 100644
+--- a/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_h264_req_multi_if.c
++++ b/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_h264_req_multi_if.c
+@@ -170,9 +170,9 @@ struct vdec_h264_slice_info_ext {
+ 	u64 wdma_end_addr_offset;
+ 	u16 nal_info;
+ 	u16 timeout;
+-	u32 reserved;
+ 	u64 vdec_fb_va;
+ 	u32 crc[8];
++	u32 reserved;
+ };
+ 
+ /**
+@@ -1226,7 +1226,12 @@ static int vdec_h264_slice_init(struct mtk_vcodec_dec_ctx *ctx)
+ 		goto error_free_inst;
+ 	}
+ 
+-	if (IS_VDEC_SUPPORT_EXT(ctx->dev->dec_capability)) {
++	/*
++	 * The MT8188 SCP firmware uses the extended VSI layout for H.264 but
++	 * does not set MTK_VDEC_IS_SUPPORT_EXT in its capabilities.
++	 */
++	if (IS_VDEC_SUPPORT_EXT(ctx->dev->dec_capability) ||
++	    ctx->dev->chip_name == MTK_VDEC_MT8188) {
+ 		vsi_size = sizeof(struct vdec_h264_slice_vsi_ext);
+ 
+ 		vsi_size = round_up(vsi_size, VCODEC_DEC_ALIGNED_64);
