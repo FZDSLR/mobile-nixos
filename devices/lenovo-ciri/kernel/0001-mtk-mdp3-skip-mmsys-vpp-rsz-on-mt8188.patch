@@ -1,0 +1,73 @@
+diff --git a/drivers/media/platform/mediatek/mdp3/mdp_cfg_data.c b/drivers/media/platform/mediatek/mdp3/mdp_cfg_data.c
+index 0b4c50bc1..fb8b8f0ab 100644
+--- a/drivers/media/platform/mediatek/mdp3/mdp_cfg_data.c
++++ b/drivers/media/platform/mediatek/mdp3/mdp_cfg_data.c
+@@ -1342,6 +1342,7 @@ const struct mtk_mdp_driver_data mt8183_mdp_driver_data = {
+ 	.pipe_info = mt8183_pipe_info,
+ 	.pipe_info_len = ARRAY_SIZE(mt8183_pipe_info),
+ 	.pp_used = MDP_PP_USED_1,
++	.no_mmsys_vpp_rsz = true,
+ };
+ 
+ const struct mtk_mdp_driver_data mt8188_mdp_driver_data = {
+@@ -1360,6 +1361,7 @@ const struct mtk_mdp_driver_data mt8188_mdp_driver_data = {
+ 	.pipe_info_len = ARRAY_SIZE(mt8188_pipe_info),
+ 	.pp_criteria = &mt8195_mdp_pp_criteria,
+ 	.pp_used = MDP_PP_USED_2,
++	.no_mmsys_vpp_rsz = true,
+ };
+ 
+ const struct mtk_mdp_driver_data mt8195_mdp_driver_data = {
+@@ -1378,6 +1380,7 @@ const struct mtk_mdp_driver_data mt8195_mdp_driver_data = {
+ 	.pipe_info_len = ARRAY_SIZE(mt8195_pipe_info),
+ 	.pp_criteria = &mt8195_mdp_pp_criteria,
+ 	.pp_used = MDP_PP_USED_2,
++	.no_mmsys_vpp_rsz = false,
+ };
+ 
+ s32 mdp_cfg_get_id_inner(struct mdp_dev *mdp_dev, enum mtk_mdp_comp_id id)
+diff --git a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c b/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c
+index 7fcb2fbdd..0c0d5958d 100644
+--- a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c
++++ b/drivers/media/platform/mediatek/mdp3/mtk-mdp3-comp.c
+@@ -402,7 +402,8 @@ static int init_rsz(struct mdp_comp_ctx *ctx, struct mdp_cmdq_cmd *cmd)
+ 	/* Enable RSZ */
+ 	MM_REG_WRITE_MASK(cmd, subsys_id, base, PRZ_ENABLE, BIT(0), BIT(0));
+ 
+-	if (CFG_CHECK(MT8195, p_id)) {
++	if (CFG_CHECK(MT8195, p_id) &&
++	    !ctx->comp->mdp_dev->mdp_data->no_mmsys_vpp_rsz) {
+ 		struct device *dev;
+ 
+ 		dev = ctx->comp->mdp_dev->mm_subsys[MDP_MM_SUBSYS_1].mmsys;
+@@ -547,7 +548,8 @@ static int config_rsz_subfrm(struct mdp_comp_ctx *ctx,
+ 		reg = CFG_COMP(MT8195, ctx->param, rsz.subfrms[index].clip);
+ 	MM_REG_WRITE(cmd, subsys_id, base, PRZ_OUTPUT_IMAGE, reg);
+ 
+-	if (CFG_CHECK(MT8195, p_id)) {
++	if (CFG_CHECK(MT8195, p_id) &&
++	    !ctx->comp->mdp_dev->mdp_data->no_mmsys_vpp_rsz) {
+ 		struct device *dev;
+ 		struct mdp_comp *merge;
+ 		const struct mtk_mdp_driver_data *data = ctx->comp->mdp_dev->mdp_data;
+diff --git a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-core.h b/drivers/media/platform/mediatek/mdp3/mtk-mdp3-core.h
+index 05cade1d0..471cdbf3e 100644
+--- a/drivers/media/platform/mediatek/mdp3/mtk-mdp3-core.h
++++ b/drivers/media/platform/mediatek/mdp3/mtk-mdp3-core.h
+@@ -101,6 +101,16 @@ struct mtk_mdp_driver_data {
+ 	unsigned int pipe_info_len;
+ 	const struct v4l2_rect *pp_criteria;
+ 	const u8 pp_used;
++	/*
++	 * MT8195 exposes mmsys VPP RSZ merge and DCM control registers
++	 * (MT8195_SVPP[12,3]_BUF_BF_RSZ_SWITCH, MT8195_VPP1_HW_DCM_*).
++	 * MT8188 reuses the MT8195 MDP3 code path (alias_id of RSZ2/3 differs
++	 * and triggers dev_err "Invalid id 1" on merge_config), but its
++	 * hardware does not have those registers; writing them is undefined.
++	 * Set this when the SoC lacks MT8195's mmsys VPP RSZ controls so
++	 * the MDP3 driver skips those calls.
++	 */
++	const bool no_mmsys_vpp_rsz;
+ };
+ 
+ struct mdp_mm_subsys {
