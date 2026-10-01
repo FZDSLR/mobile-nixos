@@ -1,0 +1,254 @@
+From 11463ea950eb8d2a81d2e5f5624b1f990a906fce Mon Sep 17 00:00:00 2001
+From: Kyrie Wu <kyrie.wu@mediatek.com>
+Date: Thu, 1 Oct 2026 22:47:18 +0800
+Subject: [PATCH] media: mediatek: decoder: av1 vsi extension, mt8188
+ force-extend and buffer size
+
+Combined three pre-7.3-rc2 patches plus the AV1_CDF_SIZE / AV1_IQ_TABLE_SIZE /
+VP9_FRAME_SIZE / AV1_TILE_SIZE / AV1_NON_EXT_VSI_SIZE macro definitions that
+they depend on.
+
+Squash of:
+
+  0d999406d  media: mediatek: decoder: fill av1 buffer size with picinfo
+            (Kyrie Wu)
+  bd135f0d8  media: mediatek: decoder: support av1 extend vsi
+            (backport of Kyrie Wu's PATCH v7 14/14 from MT8196 series)
+  b519b3cf5  media: mediatek: decoder: force-extend av1 vsi on mt8188
+
+  0d999406d: The y/c plane buffer sizes are already computed in vcp/scp; fill
+            each frame buffer's y.size/c.size from ctx->picinfo.fb_sz directly
+            instead of recomputing width*height alignments in the kernel.
+
+  bd135f0d8: Backport of upstream's MT8196 extended-VSI support. The driver
+            cannot access tile buffer addresses for the extend architecture,
+            so set tile group information in vcp and share it with kernel via
+            vsi->tile_group. Gating helpers vdec_av1_get_tile_group() and
+            vdec_av1_get_tiles_num() select between vsi->tile_group (extend)
+            and instance->tile_group (legacy) based on IS_VDEC_SUPPORT_EXT.
+            The vsi_size check now reports the actual expected size and fails
+            init with -EINVAL on mismatch.
+
+  b519b3cf5: MT8188 SCP firmware writes the extended AV1 VSI layout but does
+            not advertise IS_VDEC_SUPPORT_EXT in its decoder capabilities.
+            Without forcing the extended layout on MT8188 the kernel reads
+            VSI_SIZE 0xD50 while the firmware writes 0x1D68, every frame
+            hits the size-mismatch path, and the downstream MDP3 format
+            converter eventually stalls on the poisoned CAPTURE frame.
+            Mirror the H.264 workaround (6cd6c4fb): add a chip_name ==
+            MTK_VDEC_MT8188 OR-branch to the IS_VDEC_SUPPORT_EXT guard so
+            MT8188 always takes the extended path.
+
+Backport-notes: applied via 'git apply --reject' for bd135f0d8 with one
+manual fixup hunk; AV1_CDF_SIZE / AV1_IQ_TABLE_SIZE / VP9_FRAME_SIZE /
+AV1_TILE_SIZE / AV1_NON_EXT_VSI_SIZE were lifted from the upstream/MT8196
+series to keep the patch self-contained.
+
+Signed-off-by: Kyrie Wu <kyrie.wu@mediatek.com>
+Signed-off-by: fzdslr <fzdslr@qq.com>
+---
+ .../vcodec/decoder/vdec/vdec_av1_req_lat_if.c | 86 ++++++++++++++++---
+ 1 file changed, 73 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_av1_req_lat_if.c b/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_av1_req_lat_if.c
+index 2d622e85f..ac5e28043 100644
+--- a/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_av1_req_lat_if.c
++++ b/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_av1_req_lat_if.c
+@@ -23,8 +23,15 @@
+ #define AV1_CDF_TABLE_BUFFER_SIZE	16384
+ #define AV1_PRIMARY_REF_NONE		7
+ 
++#define VP9_FRAME_SIZE			(0x1000)
++#define AV1_CDF_SIZE			(0xFE80)
++#define AV1_IQ_TABLE_SIZE		(0x12200)
++
+ #define AV1_INVALID_IDX			-1
+ 
++#define AV1_NON_EXT_VSI_SIZE		0xD50
++#define AV1_TILE_SIZE			64
++
+ #define AV1_DIV_ROUND_UP_POW2(value, n)			\
+ ({							\
+ 	typeof(n) _n  = n;				\
+@@ -641,6 +648,8 @@ struct vdec_av1_slice_fb {
+  * @frame:		current frame info
+  * @state:		status after decode done
+  * @cur_lst_tile_id:	tile id for large scale
++ * @tile_group:	tile group info
++ * @reserved:		reserved
+  */
+ struct vdec_av1_slice_vsi {
+ 	/* lat */
+@@ -665,6 +674,8 @@ struct vdec_av1_slice_vsi {
+ 	struct vdec_av1_slice_frame frame;
+ 	struct vdec_av1_slice_state state;
+ 	u32 cur_lst_tile_id;
++	struct vdec_av1_slice_tile_group tile_group;
++	unsigned int reserved[4];
+ };
+ 
+ /**
+@@ -1384,17 +1395,29 @@ static void vdec_av1_slice_setup_uh(struct vdec_av1_slice_instance *instance,
+ 	vdec_av1_slice_setup_tile(frame, &ctrl_fh->tile_info);
+ }
+ 
++static
++struct vdec_av1_slice_tile_group *vdec_av1_get_tile_group(struct vdec_av1_slice_instance *instance,
++							  struct vdec_av1_slice_vsi *vsi)
++{
++	if (IS_VDEC_SUPPORT_EXT(instance->ctx->dev->dec_capability))
++		return &vsi->tile_group;
++	else
++		return &instance->tile_group;
++}
++
+ static int vdec_av1_slice_setup_tile_group(struct vdec_av1_slice_instance *instance,
+ 					   struct vdec_av1_slice_vsi *vsi)
+ {
+ 	struct v4l2_ctrl_av1_tile_group_entry *ctrl_tge;
+-	struct vdec_av1_slice_tile_group *tile_group = &instance->tile_group;
++	struct vdec_av1_slice_tile_group *tile_group;
+ 	struct vdec_av1_slice_uncompressed_header *uh = &vsi->frame.uh;
+ 	struct vdec_av1_slice_tile *tile = &uh->tile;
+ 	struct v4l2_ctrl *ctrl;
+ 	u32 tge_size;
+ 	int i;
+ 
++	tile_group = vdec_av1_get_tile_group(instance, vsi);
++
+ 	ctrl = v4l2_ctrl_find(&instance->ctx->ctrl_hdl, V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY);
+ 	if (!ctrl)
+ 		return -EINVAL;
+@@ -1589,6 +1612,15 @@ static int vdec_av1_slice_setup_pfc(struct vdec_av1_slice_instance *instance,
+ 	return ret;
+ }
+ 
++static u32 vdec_av1_get_tiles_num(struct vdec_av1_slice_instance *instance,
++				  struct vdec_av1_slice_vsi *vsi)
++{
++	if (IS_VDEC_SUPPORT_EXT(instance->ctx->dev->dec_capability))
++		return vsi->tile_group.num_tiles;
++	else
++		return instance->tile_group.num_tiles;
++}
++
+ static void vdec_av1_slice_setup_lat_buffer(struct vdec_av1_slice_instance *instance,
+ 					    struct vdec_av1_slice_vsi *vsi,
+ 					    struct mtk_vcodec_mem *bs,
+@@ -1629,12 +1661,18 @@ static void vdec_av1_slice_setup_lat_buffer(struct vdec_av1_slice_instance *inst
+ 
+ 	vsi->tile.buf = instance->tile.dma_addr;
+ 	vsi->tile.size = instance->tile.size;
+-	memcpy(lat_buf->tile_addr.va, instance->tile.va, 64 * instance->tile_group.num_tiles);
+ 
+ 	vsi->cdf_table.buf = instance->cdf_table.dma_addr;
+ 	vsi->cdf_table.size = instance->cdf_table.size;
+ 	vsi->iq_table.buf = instance->iq_table.dma_addr;
+ 	vsi->iq_table.size = instance->iq_table.size;
++
++	/* lat_buf is used to share hardware decoder syntax between lat and core,
++	 * there isn't only one. But there is only one tile.va for each instance.
++	 * Need to copy tile information to lat_buf every time.
++	 */
++	memcpy(lat_buf->tile_addr.va, instance->tile.va,
++	       AV1_TILE_SIZE * vdec_av1_get_tiles_num(instance, vsi));
+ }
+ 
+ static void vdec_av1_slice_setup_seg_buffer(struct vdec_av1_slice_instance *instance,
+@@ -1657,7 +1695,7 @@ static void vdec_av1_slice_setup_tile_buffer(struct vdec_av1_slice_instance *ins
+ 					     struct vdec_av1_slice_vsi *vsi,
+ 					     struct mtk_vcodec_mem *bs)
+ {
+-	struct vdec_av1_slice_tile_group *tile_group = &instance->tile_group;
++	struct vdec_av1_slice_tile_group *tile_group;
+ 	struct vdec_av1_slice_uncompressed_header *uh = &vsi->frame.uh;
+ 	struct vdec_av1_slice_tile *tile = &uh->tile;
+ 	u32 tile_num, tile_row, tile_col;
+@@ -1668,6 +1706,8 @@ static void vdec_av1_slice_setup_tile_buffer(struct vdec_av1_slice_instance *ins
+ 	u32 *tile_info_buf = instance->tile.va;
+ 	u64 pa = (u64)bs->dma_addr;
+ 
++	tile_group = vdec_av1_get_tile_group(instance, vsi);
++
+ 	if (uh->disable_cdf_update == 0)
+ 		allow_update_cdf = 1;
+ 
+@@ -1793,18 +1833,19 @@ static int vdec_av1_slice_setup_core_buffer(struct vdec_av1_slice_instance *inst
+ {
+ 	struct vb2_buffer *vb;
+ 	struct vb2_queue *vq;
+-	int w, h, plane, size;
++	int plane;
+ 	int i;
+ 
+ 	plane = instance->ctx->q_data[MTK_Q_DATA_DST].fmt->num_planes;
+-	w = vsi->frame.uh.upscaled_width;
+-	h = vsi->frame.uh.frame_height;
+-	size = ALIGN(w, VCODEC_DEC_ALIGNED_64) * ALIGN(h, VCODEC_DEC_ALIGNED_64);
+ 
+ 	/* frame buffer */
+ 	vsi->fb.y.dma_addr = fb->base_y.dma_addr;
++
++	vsi->fb.y.size = instance->ctx->picinfo.fb_sz[0];
++	vsi->fb.c.size = instance->ctx->picinfo.fb_sz[1];
++
+ 	if (plane == 1)
+-		vsi->fb.c.dma_addr = fb->base_y.dma_addr + size;
++		vsi->fb.c.dma_addr = fb->base_y.dma_addr + vsi->fb.y.size;
+ 	else
+ 		vsi->fb.c.dma_addr = fb->base_c.dma_addr;
+ 
+@@ -1827,8 +1868,10 @@ static int vdec_av1_slice_setup_core_buffer(struct vdec_av1_slice_instance *inst
+ 		}
+ 
+ 		vref->y.dma_addr = vb2_dma_contig_plane_dma_addr(vb, 0);
++		vref->y.size = vsi->fb.y.size;
++		vref->c.size = vsi->fb.c.size;
+ 		if (plane == 1)
+-			vref->c.dma_addr = vref->y.dma_addr + size;
++			vref->c.dma_addr = vref->y.dma_addr + vsi->fb.y.size;
+ 		else
+ 			vref->c.dma_addr = vb2_dma_contig_plane_dma_addr(vb, 1);
+ 	}
+@@ -1877,7 +1920,7 @@ static int vdec_av1_slice_init(struct mtk_vcodec_dec_ctx *ctx)
+ {
+ 	struct vdec_av1_slice_instance *instance;
+ 	struct vdec_av1_slice_init_vsi *vsi;
+-	int ret;
++	int ret, vsi_size = AV1_NON_EXT_VSI_SIZE;
+ 
+ 	instance = kzalloc_obj(*instance);
+ 	if (!instance)
+@@ -1911,9 +1954,26 @@ static int vdec_av1_slice_init(struct mtk_vcodec_dec_ctx *ctx)
+ 		goto error_vsi;
+ 	}
+ 
+-	if (vsi->vsi_size != sizeof(struct vdec_av1_slice_vsi))
+-		mtk_vdec_err(ctx, "remote vsi size 0x%x mismatch! expected: 0x%zx\n",
+-			     vsi->vsi_size, sizeof(struct vdec_av1_slice_vsi));
++	/*
++	 * The MT8188 SCP firmware writes an extended VSI but does not set
++	 * the IS_VDEC_SUPPORT_EXT capability bit (same bug pattern as the
++	 * H.264 driver, fixed by 6cd6c4fb). Force the extended layout on
++	 * MT8188 so the kernel struct matches what the firmware actually
++	 * writes. Other SoCs continue to gate on the capability bit.
++	 */
++	if (IS_VDEC_SUPPORT_EXT(ctx->dev->dec_capability) ||
++	    ctx->dev->chip_name == MTK_VDEC_MT8188) {
++		vsi_size = sizeof(struct vdec_av1_slice_vsi);
++		vsi->iq_table_size = AV1_IQ_TABLE_SIZE;
++		vsi->cdf_table_size = AV1_CDF_SIZE;
++	}
++
++	if (vsi->vsi_size != vsi_size) {
++		mtk_vdec_err(ctx, "remote vsi size 0x%x mismatch! expected: 0x%x\n",
++			     vsi->vsi_size, vsi_size);
++		ret = -EINVAL;
++		goto error_vsi;
++	}
+ 
+ 	instance->irq_enabled = 1;
+ 	instance->inneracing_mode = IS_VDEC_INNER_RACING(instance->ctx->dev->dec_capability);
+-- 
+2.55.0
+

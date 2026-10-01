@@ -39,9 +39,7 @@ mobile-nixos.kernel-builder {
     ./0001-HID-hid-himax-master-controller.patch
     ./0001-dts-mediatek-enable-ciri-touch-support.patch
     ./0001-mtk-mdp3-skip-mmsys-vpp-rsz-on-mt8188.patch
-    ./0001-media-mediatek-decoder-fill-av1-buffer-size-with-pic.patch
-    ./0002-media-mediatek-decoder-support-av1-extend-vsi.patch
-    ./0003-media-mediatek-decoder-force-extend-av1-vsi-on-mt818.patch
+    ./0001-media-mediatek-decoder-av1-vsi-extension-mt8188-forc.patch
   ];
   nativeBuildInputs = [ python3 ];
   isModular = true;
