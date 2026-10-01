@@ -1,0 +1,60 @@
+From b70d8ea0c8affaec2acd7eabcb45d0bf0d6f097e Mon Sep 17 00:00:00 2001
+From: Kyrie Wu <kyrie.wu@mediatek.com>
+Date: Wed, 23 Sep 2026 10:42:56 +0800
+Subject: [PATCH 1/3] media: mediatek: decoder: fill av1 buffer size with
+ picinfo
+
+The buffer size of y and c plane has been calculated in vcp/scp,
+can fill each frame buffer size with picinfo directly.
+
+Signed-off-by: Kyrie Wu <kyrie.wu@mediatek.com>
+Reviewed-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Signed-off-by: fzdslr <fzdslr@qq.com>
+---
+ .../vcodec/decoder/vdec/vdec_av1_req_lat_if.c     | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_av1_req_lat_if.c b/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_av1_req_lat_if.c
+index 2d622e85f..74da35d58 100644
+--- a/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_av1_req_lat_if.c
++++ b/drivers/media/platform/mediatek/vcodec/decoder/vdec/vdec_av1_req_lat_if.c
+@@ -1793,18 +1793,19 @@ static int vdec_av1_slice_setup_core_buffer(struct vdec_av1_slice_instance *inst
+ {
+ 	struct vb2_buffer *vb;
+ 	struct vb2_queue *vq;
+-	int w, h, plane, size;
++	int plane;
+ 	int i;
+ 
+ 	plane = instance->ctx->q_data[MTK_Q_DATA_DST].fmt->num_planes;
+-	w = vsi->frame.uh.upscaled_width;
+-	h = vsi->frame.uh.frame_height;
+-	size = ALIGN(w, VCODEC_DEC_ALIGNED_64) * ALIGN(h, VCODEC_DEC_ALIGNED_64);
+ 
+ 	/* frame buffer */
+ 	vsi->fb.y.dma_addr = fb->base_y.dma_addr;
++
++	vsi->fb.y.size = instance->ctx->picinfo.fb_sz[0];
++	vsi->fb.c.size = instance->ctx->picinfo.fb_sz[1];
++
+ 	if (plane == 1)
+-		vsi->fb.c.dma_addr = fb->base_y.dma_addr + size;
++		vsi->fb.c.dma_addr = fb->base_y.dma_addr + vsi->fb.y.size;
+ 	else
+ 		vsi->fb.c.dma_addr = fb->base_c.dma_addr;
+ 
+@@ -1827,8 +1828,10 @@ static int vdec_av1_slice_setup_core_buffer(struct vdec_av1_slice_instance *inst
+ 		}
+ 
+ 		vref->y.dma_addr = vb2_dma_contig_plane_dma_addr(vb, 0);
++		vref->y.size = vsi->fb.y.size;
++		vref->c.size = vsi->fb.c.size;
+ 		if (plane == 1)
+-			vref->c.dma_addr = vref->y.dma_addr + size;
++			vref->c.dma_addr = vref->y.dma_addr + vsi->fb.y.size;
+ 		else
+ 			vref->c.dma_addr = vb2_dma_contig_plane_dma_addr(vb, 1);
+ 	}
+-- 
+2.55.0
+
